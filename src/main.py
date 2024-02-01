@@ -1,19 +1,21 @@
-#!/usr/bin/env python3
-from datetime import datetime
-from time import sleep
-import sqlite3
-from sqlite3 import Error
+#!/usr/bin/tenv python3
 import os
+import sqlite3
+from datetime import datetime
+from sqlite3 import Error
+from time import sleep
+
 import pyfiglet
+
 from db.db_functions import *
 
 # connection and first table tested Ok
 # creates sql db in current directory (DB)
 #
 
+employee_audit = list()
 list_audit = list()
-employee_audit = dict()
-cust_audit = dict()
+cust_audit = list()
 
 total_services = {
     "Regular": "General-Tidying, Sweep, Dust, Mop, $100.00",
@@ -29,7 +31,7 @@ def text_colors(color):
     def text(text):
         c = colors.get(color.upper(), "")
         return f"{c}{text}{colors['RESET']}"
-
+    print(text)
     return text
 
 
@@ -42,28 +44,28 @@ def banner():
 def intro():
     "prints info to screen"
     inout = pyfiglet.figlet_format(" IN & OUT Cleaning Corp.")
-    name, date, my_class = (
+    name, date, my_class, badge_id = (
         "Jay Pren",
         datetime.now().strftime("%A, %d, %B %Y %I:%M%p"),
-        "CMIS-120\n\n\n",
+        "CMIS-120",
+        8911,
     )
     for i in (name, date, my_class):
         print("")
         print(i)
-    employee_audit["name"] = name
-    employee_audit["date"] = date
-    employee_audit["class"] = my_class
-    print(employee_audit)
+
+    a = employee_audit.extend([name, date, my_class, badge_id])
+
     banner()
     banner()
     print(inout.center(78))
+    return employee_audit
 
 
 def user_interface():
     "ui"
     intro()
     cash = text_colors("green")
-    cash("This is green")
     print("")
     for display1 in [
         ["Regular:", "Premium:", "Outdoor:"],
@@ -78,16 +80,16 @@ def user_interface():
         print("{:>20}{:>20}{:>20}".format(*display2))
     for display3 in ["Mop", "Laundry", "Leaves"], [
         cash("\t\t$100"),
-        cash("\t  $100"),
-        cash("\t\t$100"),
+        cash("\t  $200"),
+        cash("\t\t$300"),
     ]:
         print("{:>20}{:>20}{:>20}".format(*display3))
 
     sleep(1)
 
-    discount = "Age 65+ 10% Discount"
-    discount_center = discount.center(60)
-    print("\n", discount_center)
+    dis = "Age 65+ 10% Discount"
+    dis_banner = dis.center(60)
+    print("\n", dis_banner)
     banner()
     banner()
     return user_interface
@@ -95,31 +97,30 @@ def user_interface():
 
 def new_customer():
     """customers"""
-    discount = bool
     addr = ""
     new_cx = input("Name:\t")
     valid_age = input("Age:\t")
-    addr = input("Address:\t")
 
     if new_cx.isdigit() is True:
         print("error, letters only")
         new_cx = input("Name:\t")
-        valid_name = True
 
     if valid_age.isalpha() is True:
         print("error, numbers only")
         valid_age = int(input("Age:\t"))
-        if valid_age >= int(65):
-            discount = True
-        else:
-            discount = False
+    if int(64) < int(valid_age) < int(100):
+        discount = True
+        cash = text_colors("green")
+        print("\nDiscount Applied!\n")
+    else:
+        discount = False
 
+    addr = input("Address:\t")
     valid_name = new_cx.replace(" ", "") and new_cx.upper()
     valid_addr = addr.replace(" ", "") and addr.upper()
-    cust_audit["name"] = valid_name
-    cust_audit["age"] = valid_age
-    cust_audit["address"] = valid_addr
-    cust_audit["discount"] = discount
+    c = [valid_name, valid_addr, valid_age, discount]
+    cust_audit.extend(c)
+    print(cust_audit)
 
     print("")
     print(f"Welcome, {new_cx}")
@@ -154,31 +155,30 @@ def customer_transaction():
     )
 
     if service_selection == int(1):
-        print(f"You chose:\n {total_services['Regular']}")
+        print(f"Customer selects:\n {total_services['Regular']}")
         service_selection = total_services["Regular"]
-        cust_audit["order"] = service_selection
 
     elif service_selection == int(2):
-        print(f"You chose:\n {total_services['Premium']}")
+        print(f"Customer selects:\n {total_services['Premium']}")
         service_selection = total_services["Premium"]
-        cust_audit["order"] = service_selection
 
     elif service_selection == int(3):
-        for selection in total_services:
-            print("{}:{}".format(selection, total_services[selection]))
-        print(f"You chose:\n {total_services['Outdoor']}")
-        service_selection = total_services["Outdoor"]
+        for selection in total_services.items():
+            print(f"Customer selects:\n {total_services['Outdoor']}")
+            service_selection = total_services["Outdoor"]
     else:
         if (
-            service_selection != total_services["Regular"]
-            or total_services["Premium"]
-            or total_services["Outdoor"]
+                service_selection != total_services["Regular"]
+                or total_services["Premium"]
+                or total_services["Outdoor"]
         ):
             print("Error")
             print("Enter 1 2 or 3")
             customer_transaction()
+
+    cust_audit.append(service_selection)
     print(cust_audit)
-    return service_selection, cust_audit
+    return cust_audit
 
 
 def price_per_house(total_area):
@@ -190,8 +190,6 @@ def price_per_house(total_area):
 
     area = l * w
     price = labor * area
-    cust_audit["area"] = area
-    cust_audit["price"] = price
 
     def payment():
         p = cust_audit.get("service_selection", "")
@@ -203,25 +201,21 @@ def price_per_house(total_area):
 
 def main():
     """main fn"""
-    db_created = {}
+    data = []
     new_table = False
 
     create = input("Create DB?(y/n) \t ")
     if create == str("Y") or create == str("y"):
-        con = None
         try:
-            con = sqlite3.connect(DB)
-            customers_table(con, cx_table_create)
-            con.close()
+            db = create_database()
+            customers_table(create_database, cx_table_create)
         except Error as e:
             print(f"{e}")
 
-        db_created["create"] = True
-        print(f"DB created: {DB}{con}")
+        print(f"DB & table created: {DB}:{db}")
 
     elif create == str("N") or create == str("n"):
         print("DB not created")
-        db_created["create"] = False
 
     user_interface()
     new_customer()
@@ -236,7 +230,6 @@ def main():
         print("Error")
 
     print("--end-customer_trasnaction()---")
-    print("--endmain--")
 
     if __name__ == "__main__":
         main()
