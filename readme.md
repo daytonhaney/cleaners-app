@@ -14,4 +14,7 @@
 
 # in progress:
 
-[p](https://github.com/daytonhaney/soupsandwich2022/assets/37848207/4f8e5f02-60fa-4a64-847b-ed4324bbbfbe)
+![p](https://github.com/daytonhaney/soupsandwich2022/assets/37848207/4f8e5f02-60fa-4a64-847b-ed4324bbbfbe)
+
+      $ pip3 install pyfiglet
+      $ python3 main.py

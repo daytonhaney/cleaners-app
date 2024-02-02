@@ -1,0 +1,13 @@
+.*__pychached__/
+*.pyc
+*.pyo
+*.so
+*.a
+*.swp
+*.swo
+*.swn
+bin*
+lib*
+lib64*
+pycfg.
+setup*
