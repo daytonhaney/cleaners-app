@@ -1,6 +1,7 @@
 #!/usr/bin/tenv python3
 import os
 import sqlite3
+import sys
 from datetime import datetime
 from sqlite3 import Error
 from time import sleep
@@ -13,14 +14,16 @@ from db.db_functions import *
 # creates sql db in current directory (DB)
 #
 
-employee_audit = list()
-list_audit = list()
-cust_audit = list()
+employee_audit = []
+list_audit = []
+cust_audit = []
+
+PRICE = {"r": 100, "p": 200, "o": 300}
 
 total_services = {
-    "Regular": "General-Tidying, Sweep, Dust, Mop, $100.00",
-    "Premium": "Regular Service+, Bathrooms, Closets, Laundry, Senior 10% Discount, $200.00",
-    "Outdoor": "Mowing, Weed-Wack, Shrubs, Leaves, Senior, 10% Discount, $200.00\n",
+    "Regular": "General-Tidying, Sweep, Dust, Mop $100.00",
+    "Premium": "Regular Service+, Bathrooms, Closets, Laundry, Senior 10% Discount ,$200.00",
+    "Outdoor": "Mowing, Weed-Wack, Shrubs, Leaves, Senior, 10% Discount, $200.00",
 }
 
 
@@ -31,7 +34,7 @@ def text_colors(color):
     def text(text):
         c = colors.get(color.upper(), "")
         return f"{c}{text}{colors['RESET']}"
-    print(text)
+
     return text
 
 
@@ -50,11 +53,15 @@ def intro():
         "CMIS-120",
         8911,
     )
-    for i in (name, date, my_class):
+    for i in (name, date, my_class, badge_id):
         print("")
         print(i)
 
-    a = employee_audit.extend([name, date, my_class, badge_id])
+    employee_audit = " ".join(
+        [str(i) for i in [name, date, my_class, badge_id]],
+    )
+
+    print("\n", employee_audit)
 
     banner()
     banner()
@@ -67,6 +74,7 @@ def user_interface():
     intro()
     cash = text_colors("green")
     print("")
+
     for display1 in [
         ["Regular:", "Premium:", "Outdoor:"],
         ["Room Clean", "Regular +", "Mow"],
@@ -85,11 +93,10 @@ def user_interface():
     ]:
         print("{:>20}{:>20}{:>20}".format(*display3))
 
-    sleep(1)
+    d = "Age 65+ 15% Discount"
+    d_banner = d.center(50)
+    print(d_banner)
 
-    dis = "Age 65+ 10% Discount"
-    dis_banner = dis.center(60)
-    print("\n", dis_banner)
     banner()
     banner()
     return user_interface
@@ -110,7 +117,7 @@ def new_customer():
         valid_age = int(input("Age:\t"))
     if int(64) < int(valid_age) < int(100):
         discount = True
-        cash = text_colors("green")
+
         print("\nDiscount Applied!\n")
     else:
         discount = False
@@ -121,7 +128,6 @@ def new_customer():
     c = [valid_name, valid_addr, valid_age, discount]
     cust_audit.extend(c)
     print(cust_audit)
-
     print("")
     print(f"Welcome, {new_cx}")
 
@@ -130,6 +136,7 @@ def new_customer():
 
 def customer_transaction():
     "1 2 or 3"
+    p = [100, 200, 300]
     service_selection = True
     while True:
         print("Cleaning packages...\n ")
@@ -138,7 +145,7 @@ def customer_transaction():
         sleep(0.50)
         print("\n2.Premium Package ---> $200.00", "\n", total_services["Premium"])
         sleep(0.50)
-        print("\n3.Outdoor Package ---> $300.00", total_services["Outdoor"])
+        print("\n3.Outdoor Package ---> $300.00", "\n", total_services["Outdoor"])
         print("$.15 per square foot of house is charged for labor\n")
         break
 
@@ -164,39 +171,59 @@ def customer_transaction():
 
     elif service_selection == int(3):
         for selection in total_services.items():
-            print(f"Customer selects:\n {total_services['Outdoor']}")
+            print(
+                f"Customer selects:\n  {selection}\n\tServices:\n\t {total_services['Regular']}"
+            )
             service_selection = total_services["Outdoor"]
     else:
         if (
-                service_selection != total_services["Regular"]
-                or total_services["Premium"]
-                or total_services["Outdoor"]
+            service_selection != total_services["Regular"]
+            or total_services["Premium"]
+            or total_services["Outdoor"]
         ):
             print("Error")
             print("Enter 1 2 or 3")
             customer_transaction()
+    print("Measure length and width of exterior for price")
+    length = int(input("Length:\t"))
+    width = int(input("Width:\t"))
+    total_price = price_per_house(length, width)
 
-    cust_audit.append(service_selection)
+    if all(cust_audit):
+        total_price = get_discount(total_price)
+
+    print(total_price)
+
     print(cust_audit)
     return cust_audit
 
 
-def price_per_house(total_area):
+def get_discount(price):
+    if cust_audit[3] is True:
+        dis = price * 0.15
+        dis_price = price - dis
+        return dis_price
+
+
+def price_per_house(l, w) -> int:
     """area of house"""
-    prices = {"REGULAR": 100, "PREMIUM": 200, "OUTDOOR": 300}
-    l = float(input("""Enter length x" y'' """))
-    w = float(input("""Enter Width x"y'' """))
+    price = 0
+    p = {"reg": 100, "prem": 200, "out": 300}
     labor = float(0.15)
+    area: int = l * w
+    labor_p = area * labor
 
-    area = l * w
-    price = labor * area
+    if total_services["Regular"]:
+        price = labor_p + p["reg"]
 
-    def payment():
-        p = cust_audit.get("service_selection", "")
-        print(p)
-        return p
+    if total_services["Premium"]:
+        price = labor_p + p["prem"]
 
-    return payment
+    if total_services["Outdoor"]:
+        price = labor_p + p["out"]
+
+    print("testies")
+    return price
 
 
 def main():
@@ -231,8 +258,12 @@ def main():
 
     print("--end-customer_trasnaction()---")
 
-    if __name__ == "__main__":
-        main()
+    while create is not None:
+        loop = int(input("Press 1 then <Enter> to go again: \t "))
+        if loop is int(1):
+            main()
+        else:
+            sys.exit()
 
 
 main()
