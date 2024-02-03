@@ -46,10 +46,8 @@ def get_discount(total):
 
 def labor_charge(area):
     """calculate labor"""
-    labor = area * float(0.15)
-    rl = round(labor, 2)
-    print(f"labor: {rl}")
-    return rl
+    labor = area * 0.15
+    return labor
 
 
 def printer():
@@ -111,12 +109,12 @@ def user_interface():
     print(d_banner)
     banner()
     banner()
-
     return user_interface
 
 
 def new_customer():
     """customers"""
+    new_c = []
     addr = ""
     new_cx = input("Name:\t")
     valid_age = input("Age:\t")
@@ -151,7 +149,8 @@ def new_customer():
 def customer_transaction():
     "1 2 or 3"
     PRICE = [100, 200, 300]
-    while True:
+    valid = False
+    while valid is False:
         print("\tCleaning packages...\n ")
         sleep(0.50)
         print(
@@ -186,9 +185,8 @@ def customer_transaction():
     """,
         )
     )
-
     if service_selection == int(1):
-        print(f"Customer selects:\n {total_services['Regular']}")
+        print(f"Customer selects:\n{total_services['Regular']}\n")
         print("Measure Length and width of exterior for price")
         l = int(input("Length:\t"))
         w = int(input("Width:\t"))
@@ -216,9 +214,9 @@ def customer_transaction():
 
     else:
         if (
-                service_selection != total_services["Regular"]
-                or total_services["Premium"]
-                or total_services["Outdoor"]
+            service_selection != total_services["Regular"]
+            or total_services["Premium"]
+            or total_services["Outdoor"]
         ):
             print("Error")
             print("Enter 1 2 or 3")
@@ -232,21 +230,23 @@ def price_per_house(s,l,w):
         labor = labor_charge(area)
         total = s + labor
         total += 100 # something not being added correctly, hard coded 100
-        print("price for reg: ")
-        print(f"{float(total)}")
+        reg_total = round(total,3)
+        print(f"Rrice for Regular: ${reg_total}")
+
 
     elif s == LIST_PRICE[1]:
         labor = labor_charge(area)
         total = s + labor
         total += 200
-        print("price for prem")
-        print(f"{float(total)}")
+        prem_total = round(total,3)
+        print(f"price for Premium: ${prem_total}")
 
     elif s == total_services["Outdoor"]:
         labor = labor_charge(area)
         total = s + labor
-        total += 100
-        print(f"price for out{float(total)}")
+        total += 300
+        out_total = round(total,3)
+        print(f"price for Outdoor: ${out_total}")
 
     if all(cust_audit) is True:
         labor = labor_charge(area)

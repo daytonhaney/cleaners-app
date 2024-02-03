@@ -26,7 +26,7 @@ def main():
         print("DB not created\n")
 
     user_interface()
-    new_customer()
+    c = new_customer()
     total = customer_transaction()
     backups = input("Backup Database?(y/n) \t ")
     if backups == "y" or backups == "y":
@@ -38,10 +38,9 @@ def main():
 
     print("--end-customer_trasnaction()---")
 
-    while(total):
+    while True:
         loop = int(input("Press 1 then <Enter> to go again: \t "))
         if loop is int(1):
-            cust_audit = []
             main()
         else:
             sys.exit()
