@@ -16,14 +16,14 @@ street text not null,
 amount_paid integer not null)"""
 
 
+
 def create_database():
-    "creates new database as 'DB' in current directory"
     DB = "business_data.db"
     con = None
     try:
         con = sqlite3.connect(DB)
         return con
-    except Error as e:
+    except OSError as e:
         print(e)
 
     return con

@@ -1,21 +1,92 @@
-#!/usr/bin/tenv python3
+#!/usr/bin/env python3
 
+import os
+import sqlite3
+import sys
 from datetime import datetime
-from time import sleep
+from sqlite3 import Error
+from time import sleep, time
 
 import pyfiglet
 
-employee_audit = []
-list_audit = []
-cust_audit = []
+from db.db_functions import *
 
-PRICE = {"r": 100, "p": 200, "o": 300}
 total_services = {
     "Regular": "General-Tidying, Sweep, Dust, Mop $100.00",
     "Premium": "Regular Service+, Bathrooms, Closets, Laundry $200.00",
     "Outdoor": "Mowing, Weed-Wack, Shrubs, Leaves $300.00",
 }
-LIST_PRICE = [100,200,300]
+
+
+def get_employees():
+    "get employees"
+    employee_list = []
+
+    print("\nManager:")
+    name = "Mike Chambers"
+    date = datetime.now().strftime("%A, %d, %B %Y %I:%M%p")
+    my_class = "North East"
+    bage_id = "MC98342"
+    employee = name, date, my_class, bage_id
+
+    for i in name, date, my_class, bage_id:
+        print(i)
+
+    employee_list.append(employee)
+    print(f"{employee}")
+    return employee_list
+
+
+p = lambda p: print(p)
+
+
+def new_customer():
+    """get customers"""
+    valid_name = False
+    discount = int
+    addr = ""
+    age = ""
+
+    name = input("Name: Press <Enter> to exit: \t")
+    if not name.strip():
+        sys.exit()
+
+    if name.isdigit():
+        print("error, letters only")
+        name = input("Name: \t")
+
+    if name.isalpha():
+        valid_name = True
+
+    age = input("Age:\t")
+    if age.isalpha() is True:
+        print("error, numbers only")
+        age = input("Age: \t")
+
+    if int(64) < int(age) < int(120):
+        discount = int(1)
+
+        print("\nApplying discount...\n")
+        sleep(0.5)
+        cash = text_colors("green")
+        print(cash("-15%"), "discount applied!")
+
+    else:
+        discount = int(0), False
+
+    addr = input("Enter address: \t")
+    name = name.replace(" ", "") and name.upper()
+    addr = addr.replace(" ", "") and addr.upper()
+    print("name:", name)
+    print(f"Welcome, {name}", "\n")
+    return valid_name, name, addr, discount
+
+
+def banner():
+    """ui"""
+    b = "=" * 78
+    print(b)
+
 
 def text_colors(color):
     """ui"""
@@ -28,63 +99,11 @@ def text_colors(color):
     return text
 
 
-def banner():
-    """ui"""
-    b = "=" * 78
-    print(b)
-
-
-def get_discount(total):
-    """calculate discount"""
-    if cust_audit[3] is True:
-        dis = total * 0.15
-        dis_price = total - dis
-        print("getting discount...")
-        print(dis_price)
-        return dis_price
-
-
-def labor_charge(area):
-    """calculate labor"""
-    labor = area * 0.15
-    return labor
-
-
-def printer():
-    """test"""
-    x = print("testing-------------------------------------")
-    return x
-printer()
-
-
-
-def intro():
-    """prints info"""
-    inout = pyfiglet.figlet_format(" IN & OUT Cleaning Corp.")
-    name, date, my_class, badge_id = (
-        "Mike Chambers",
-        datetime.now().strftime("%A, %d, %B %Y %I:%M%p"),
-        "North East",
-        "M891132",
-    )
-
-    for i in (name, date, my_class, badge_id):
-        print(i)
-
-    employee_audit.append([name, date, my_class, badge_id])
-    print("\n", employee_audit)
-    banner()
-    banner()
-    print(inout.center(78))
-    return employee_audit
-
-
 def user_interface():
-    "ui"
-    intro()
+    """ui"""
+    in_out = pyfiglet.figlet_format("In & Out Cleaning Corp")
+    p(in_out)
     cash = text_colors("green")
-    print("")
-
     for display1 in [
         ["Regular:", "Premium:", "Outdoor:"],
         ["Room Clean", "Regular +", "Mow"],
@@ -96,6 +115,7 @@ def user_interface():
         ["Sweep", "Closets", "Shrubs"],
     ]:
         print("{:>20}{:>20}{:>20}".format(*display2))
+
     for display3 in ["Mop", "Laundry", "Leaves"], [
         cash("\t\t$100"),
         cash("\t  $200"),
@@ -105,162 +125,170 @@ def user_interface():
 
     print("")
     d = "Age 65+ 15% Discount"
-    d_banner = d.center(80)
+    d_banner = d.center(70)
     print(d_banner)
     banner()
     banner()
+    package = "Cleaning packages..."
+    package_banner = package.center(53)
+
+    print(f"\t{package_banner}\n ")
+    print(
+        "\n1.Regular Package ---> $100.00",
+        "\n",
+        total_services["Regular"],
+    )
+    print(
+        "\n2.Premium Package ---> $200.00",
+        "\n",
+        total_services["Premium"],
+    )
+    print(
+        "\n3.Outdoor Package ---> $300.00",
+        "\n",
+        total_services["Outdoor"],
+    )
+    print("")
+    print("$.15 per square foot of house is charged for labor\n")
+    print("Chose cleaning package...")
+    sleep(0.4)
     return user_interface
 
 
-def new_customer():
-    """customers"""
-    new_c = []
-    addr = ""
-    new_cx = input("Name:\t")
-    valid_age = input("Age:\t")
-
-    if new_cx.isdigit() is True:
-        print("error, letters only")
-        new_cx = input("Name:\t")
-
-    if valid_age.isalpha() is True:
-        print("error, numbers only")
-        valid_age = int(input("Age:\t"))
-    if int(64) < int(valid_age) < int(120):
-        discount = True
-
-        print("\nDiscount Applied!\n")
-    else:
-        discount = False
-
-    addr = input("Address:\t")
-    valid_name = new_cx.replace(" ", "") and new_cx.upper()
-    valid_addr = addr.replace(" ", "") and addr.upper()
-    c = [valid_name, valid_addr, valid_age, discount]
-    cust_audit.extend(c)
-
-    print(cust_audit)
-    print("")
-    print(f"Welcome, {new_cx}", "\n")
-
-    return cust_audit
-
-
-def customer_transaction():
-    "1 2 or 3"
-    PRICE = [100, 200, 300]
-    valid = False
-    while valid is False:
-        print("\tCleaning packages...\n ")
-        sleep(0.50)
-        print(
-            "\n1.Regular Package ---> $100.00",
-            "\n",
-            total_services["Regular"],
-        )
-        sleep(0.50)
-        print(
-            "\n2.Premium Package ---> $200.00",
-            "\n",
-            total_services["Premium"],
-        )
-        sleep(0.50)
-        print(
-            "\n3.Outdoor Package ---> $300.00",
-            "\n",
-            total_services["Outdoor"],
-        )
-        print("")
-        print("$.15 per square foot of house is charged for labor\n")
-        break
-
-    print("Chose cleaning package...")
-    sleep(0.4)
+def cust_selection():
+    """customer selections"""
     service_selection = int(
         input(
             """
     Press ---[1]---> Regular\n 
     Press ---[2]---> Premium\n
     Press ---[3]---> Outdoor\n
-    """,
+    """
         )
     )
-    if service_selection == int(1):
-        print(f"Customer selects:\n{total_services['Regular']}\n")
-        print("Measure Length and width of exterior for price")
-        l = int(input("Length:\t"))
-        w = int(input("Width:\t"))
-        s = PRICE[0]
-        price_per_house(s,l,w)
-        return
 
-    if service_selection == int(2):
-        print(f"Customer selects:\n {total_services['Premium']}")
-        print("Measure Length and width of exterior for price")
-        l = int(input("Length:\t"))
-        w = int(input("Width:\t"))
-        s2 = PRICE[1]
-        price_per_house(s2,l,w)
-        return
+    services = 1, 2, 3
+    if service_selection == 1:
+        return service_selection
 
-    elif service_selection == int(3):
-        print(f"Customer selects:\n {total_services['Outdoor']}")
-        print("Measure Length and width of exterior for price")
-        l = int(input("Length:\t"))
-        w = int(input("Width:\t"))
-        s3 = PRICE[2]
-        price_per_house(s3,l,w)
-        return
+    if service_selection == 2:
+        return service_selection
+
+    if service_selection == 3:
+        return service_selection
 
     else:
-        if (
-            service_selection != total_services["Regular"]
-            or total_services["Premium"]
-            or total_services["Outdoor"]
-        ):
+        if service_selection != services:
             print("Error")
             print("Enter 1 2 or 3")
-            customer_transaction()
+            cust_selection()
+            return service_selection
+        # print("Error, letter selections not allowed")
+        # print("Enter 1 2 or 3")
+        print(f"u selection {service_selection}")
+
+    return service_selection
 
 
-def price_per_house(s,l,w):
-    """price"""
-    area = l * w
-    if s == LIST_PRICE[0]: # ? have any effeTotal price with discount: 182.75cts?
+def customer_transaction(selection, discount):
+    "1 2 or 3"
+
+    LIST_PRICE = [100.00, 200.00, 300.00]
+    totals = []
+
+    if selection == int(1):
+        print(f"Customer selects:\n{total_services['Regular']}\n")
+        print("Measure Length and width of exterior for price")
+        l = int(input("Length: \t"))
+        w = int(input("Width: \t"))
+        area = l * w
         labor = labor_charge(area)
-        total = s + labor
-        total += 100 # something not being added correctly, hard coded 100
-        reg_total = round(total,3)
-        print(f"Rrice for Regular: ${reg_total}")
+        s = LIST_PRICE[0]
+        p("---price_per_house line 246__")
+        r_total_before_discount = price_per_house(s, labor)
+        totals.append(r_total_before_discount)
+
+    elif selection == int(2):
+        print(f"Customer selects:\n {total_services['Premium']}")
+        print("Measure Length and width of exterior for price")
+        l = float(input("Length: \t"))
+        w = float(input("Width: \t"))
+        premium_area = l * w
+        labor2 = (lambda area: (area) * 0.15)(premium_area)
+        print("area for pre = ", premium_area)
+        s2 = LIST_PRICE[1]
+        p_total_before_discount = price_per_house(s2, labor2)
+        totals.append(p_total_before_discount)
+
+    elif selection == int(3):
+        print(f"Customer selects:\n {total_services['Outdoor']}")
+        print("Measure Length and width of exterior for price")
+        l = int(input("Length: \t"))
+        w = int(input("Width: \t"))
+        outdoor_area = l * w
+        outdoor_labor = labor_charge(outdoor_area)
+        s3 = LIST_PRICE[2]
+        r_total_before_discount = price_per_house(s3, outdoor_labor)
+        totals.append(r_total_before_discount)
+
+        # selections ok
+        # fix discount, price
+        # if min(discounts) == 0:
+        #    print(f"Total: {total_price}")
+        #    total_price_including_dis = get_discount(total_price)
+        #    return total_price_including_dis
+        # if any(discounts):
+        #    total_price_including_dis = get_discount(total_price_before_discount)
+        #
+        # else:
+        #    print(f"Total: {total_price}")
+
+    return totals
+    # p("-----7-----")
 
 
-    elif s == LIST_PRICE[1]:
-        labor = labor_charge(area)
-        total = s + labor
-        total += 200
-        prem_total = round(total,3)
-        print(f"price for Premium: ${prem_total}")
+def price_per_house(selection, labor):
+    p("price_per_house function line 254 ")
+    LIST_PRICE = [100.00, 200.00, 300.00]
+    cash = text_colors("green")
 
-    elif s == total_services["Outdoor"]:
-        labor = labor_charge(area)
-        total = s + labor
-        total += 300
-        out_total = round(total,3)
-        print(f"price for Outdoor: ${out_total}")
+    if selection == LIST_PRICE[0]:
+        total = selection + labor
+        reg_before_discount = total
+        print("{:.2f}".format(float(reg_before_discount)))
+        cash(reg_before_discount)
 
-    if all(cust_audit) is True:
-        labor = labor_charge(area)
-        discounted = get_discount(total)
-        total = s + labor
-        print(f"Total price with discount: {discounted}")
-        return discounted
+        return reg_before_discount
 
-    if all(cust_audit) is False:
-        labor_charge(area)
-        discounted = get_discount(total)
-        print(f"Total price with discount: {discounted}")
-        return discounted
+    elif selection == LIST_PRICE[1]:
+        total = selection + labor
+        prem_before_discount = total
+        print("{:.2f}".format(float(prem_before_discount)))
+        cash(prem_before_discount)
+        return prem_before_discount
 
-
+    elif selection == LIST_PRICE[2]:
+        total = selection + labor
+        out_before_discount = total
+        print("{:.2f}".format(float(out_before_discount)))
+        cash(out_before_discount)
+        return out_before_discount
 
 
+def get_discount(total):
+    """calculate discount"""
+    p("-----calculate discount------ln 291")
+    dis = total * 0.15
+    discount_price = total - dis
+    print("getting discount...")
+    print(discount_price)
+    return discount_price
+
+
+def labor_charge(area):
+    """calculate labor"""
+    p("--calculate labor ln 281--")
+    labor = area * 0.15
+    cash = text_colors("green")
+    print(cash("labor: "), labor)
+    return labor

@@ -1,5 +1,7 @@
 from distutils.core import setup
 
+# distutils depreciated as of python3.11
+# -- setuptools recommended > 3.11
 setup(
     name="cleaners-app",
     version="0.0.1",
