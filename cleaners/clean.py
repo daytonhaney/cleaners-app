@@ -7,8 +7,7 @@ from datetime import datetime
 from sqlite3 import Error
 from time import sleep, time
 
-import pyfiglet
-
+from cleaners.fig import io_figlets
 from db.db_functions import *
 
 total_services = {
@@ -32,8 +31,8 @@ def get_employees():
     for i in name, date, my_class, bage_id:
         print(i)
 
+    print("")
     employee_list.append(employee)
-    print(f"{employee}")
     return employee_list
 
 
@@ -49,24 +48,20 @@ def new_customer():
 
     name = input("Name: Press <Enter> to exit: \t")
     if not name.strip():
-        sys.exit()
+        sys.exit("come again soon'")
 
-    if name.isdigit():
+    if name.isdigit() and name.isalpha():
         print("error, letters only")
         name = input("Name: \t")
 
-    if name.isalpha():
-        valid_name = True
-
-    age = input("Age:\t")
+    age = input("Age: \t")
     if age.isalpha() is True:
         print("error, numbers only")
         age = input("Age: \t")
 
     if int(64) < int(age) < int(120):
-        discount = int(1)
-
-        print("\nApplying discount...\n")
+        discount = int(1), True
+        print("applying discounts...!")
         sleep(0.5)
         cash = text_colors("green")
         print(cash("-15%"), "discount applied!")
@@ -74,10 +69,10 @@ def new_customer():
     else:
         discount = int(0), False
 
-    addr = input("Enter address: \t")
+    address = input("Enter address: \t")
+    addr = address.replace(" ", "") and addr.upper()
     name = name.replace(" ", "") and name.upper()
-    addr = addr.replace(" ", "") and addr.upper()
-    print("name:", name)
+    valid_name = True
     print(f"Welcome, {name}", "\n")
     return valid_name, name, addr, discount
 
@@ -90,7 +85,7 @@ def banner():
 
 def text_colors(color):
     """ui"""
-    colors = {"RESET": "\033[m", "RED": "\033[31m]", "GREEN": "\033[32m"}
+    colors = {"RESET": "\033[m", "RED": "\033[31m", "GREEN": "\033[32m"}
 
     def text(text):
         c = colors.get(color.upper(), "")
@@ -101,8 +96,9 @@ def text_colors(color):
 
 def user_interface():
     """ui"""
-    in_out = pyfiglet.figlet_format("In & Out Cleaning Corp")
-    p(in_out)
+
+    io_figlets()
+
     cash = text_colors("green")
     for display1 in [
         ["Regular:", "Premium:", "Outdoor:"],
@@ -152,11 +148,11 @@ def user_interface():
     print("$.15 per square foot of house is charged for labor\n")
     print("Chose cleaning package...")
     sleep(0.4)
-    return user_interface
 
 
 def cust_selection():
     """customer selections"""
+
     service_selection = int(
         input(
             """
@@ -167,9 +163,9 @@ def cust_selection():
         )
     )
 
-    services = 1, 2, 3
     if service_selection == 1:
-        return service_selection
+        reg_selection = service_selection
+        return reg_selection
 
     if service_selection == 2:
         return service_selection
@@ -178,16 +174,14 @@ def cust_selection():
         return service_selection
 
     else:
-        if service_selection != services:
+        if service_selection != 1 or service_selection != 2 or service_selection != 3:
             print("Error")
             print("Enter 1 2 or 3")
-            cust_selection()
-            return service_selection
-        # print("Error, letter selections not allowed")
-        # print("Enter 1 2 or 3")
-        print(f"u selection {service_selection}")
-
+            return cust_selection()
+    p(f"selection is {service_selection}")
     return service_selection
+    # print("Error, letter selections not allowed")
+    # print("Enter 1 2 or 3")
 
 
 def customer_transaction(selection, discount):
@@ -198,13 +192,14 @@ def customer_transaction(selection, discount):
 
     if selection == int(1):
         print(f"Customer selects:\n{total_services['Regular']}\n")
+        sleep(0.5)
         print("Measure Length and width of exterior for price")
-        l = int(input("Length: \t"))
-        w = int(input("Width: \t"))
+
+        l = float(input("Length: \t"))
+        w = float(input("Width: \t"))
         area = l * w
         labor = labor_charge(area)
         s = LIST_PRICE[0]
-        p("---price_per_house line 246__")
         r_total_before_discount = price_per_house(s, labor)
         totals.append(r_total_before_discount)
 
@@ -231,20 +226,7 @@ def customer_transaction(selection, discount):
         r_total_before_discount = price_per_house(s3, outdoor_labor)
         totals.append(r_total_before_discount)
 
-        # selections ok
-        # fix discount, price
-        # if min(discounts) == 0:
-        #    print(f"Total: {total_price}")
-        #    total_price_including_dis = get_discount(total_price)
-        #    return total_price_including_dis
-        # if any(discounts):
-        #    total_price_including_dis = get_discount(total_price_before_discount)
-        #
-        # else:
-        #    print(f"Total: {total_price}")
-
     return totals
-    # p("-----7-----")
 
 
 def price_per_house(selection, labor):
@@ -277,18 +259,20 @@ def price_per_house(selection, labor):
 
 def get_discount(total):
     """calculate discount"""
-    p("-----calculate discount------ln 291")
-    dis = total * 0.15
-    discount_price = total - dis
+    dis = total[0] * 15 / 100
     print("getting discount...")
-    print(discount_price)
-    return discount_price
+    return dis
 
 
 def labor_charge(area):
     """calculate labor"""
-    p("--calculate labor ln 281--")
     labor = area * 0.15
     cash = text_colors("green")
     print(cash("labor: "), labor)
     return labor
+
+
+def final_price(reg_price=0, discount=0):
+    """get final price"""
+    final_discount_price = reg_price - discount
+    return final_discount_price
