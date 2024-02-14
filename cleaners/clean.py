@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import sqlite3
 import sys
 from datetime import datetime
@@ -11,24 +12,25 @@ from cleaners.fig import io_figlets
 from db.db_functions import *
 
 total_services = {
-    "Regular": "General-Tidying, Sweep, Dust, Mop $100.00",
-    "Premium": "Regular Service+, Bathrooms, Closets, Laundry $200.00",
-    "Outdoor": "Mowing, Weed-Wack, Shrubs, Leaves $300.00",
+    "Regular": "General-Tidying, Sweep, Dust, Mop",
+    "Premium": "Regular Service+, Bathrooms, Closets, Laundry",
+    "Outdoor": "Mowing, Weed-Wack, Shrubs, Leaves",
 }
 
 
 def get_employees():
     "get employees"
+
     employee_list = []
 
     print("\nManager:")
     name = "Mike Chambers"
     date = datetime.now().strftime("%A, %d, %B %Y %I:%M%p")
     my_class = "North East"
-    bage_id = "MC98342"
-    employee = name, date, my_class, bage_id
+    badge_id = "MC98342"
+    employee = name, date, my_class, badge_id
 
-    for i in name, date, my_class, bage_id:
+    for i in name, date, my_class, badge_id:
         print(i)
 
     print("")
@@ -41,18 +43,16 @@ p = lambda p: print(p)
 
 def new_customer():
     """get customers"""
+
     discount = int
     addr = ""
     age = ""
     valid_name = False
 
-    # if not name.strip():
-    #    sys.exit("come again soon'")
-
-    name = input("Name: <Enter> to exit:  \t")
+    name = input("Name: <Enter> to exit  \t")
 
     if name.isalpha():
-        name = name.replace(" ", "")
+        # name = name.replace(" ", "")
         name = name.capitalize()
         valid_name = True
 
@@ -60,6 +60,9 @@ def new_customer():
         if age.isalpha() is True:
             print("error, numbers only")
             age = input("Age: \t")
+            # added incase input chars in age
+            age1 = re.findall(r"\b\d+\b", age)
+            age = age1[0]
 
         if int(64) < int(age) < int(999):
             discount = int(1), True
@@ -72,18 +75,21 @@ def new_customer():
             discount = int(0), False
 
         address = input("Enter address: \t")
-        addr = address.replace(" ", "") and address.capitalize()
+        addr = address.capitalize()
+
     return name, valid_name, discount, addr
 
 
 def banner():
     """ui"""
+
     b = "=" * 78
     print(b)
 
 
 def text_colors(color):
     """ui"""
+
     colors = {"RESET": "\033[m", "RED": "\033[31m", "GREEN": "\033[32m"}
 
     def text(text):
@@ -97,7 +103,6 @@ def user_interface():
     """ui"""
 
     io_figlets()
-
     cash = text_colors("green")
     for display1 in [
         ["Regular:", "Premium:", "Outdoor:"],
@@ -163,8 +168,7 @@ def cust_selection():
     )
 
     if service_selection == 1:
-        reg_selection = service_selection
-        return reg_selection
+        return service_selection
 
     if service_selection == 2:
         return service_selection
@@ -177,10 +181,6 @@ def cust_selection():
             print("Error")
             print("Enter 1 2 or 3")
             return cust_selection()
-    p(f"selection is {service_selection}")
-    return service_selection
-    # print("Error, letter selections not allowed")
-    # print("Enter 1 2 or 3")
 
 
 def customer_transaction(selection, discount):
@@ -188,9 +188,10 @@ def customer_transaction(selection, discount):
 
     LIST_PRICE = [100.00, 200.00, 300.00]
     totals = []
+    cash = text_colors("green")
 
     if selection == int(1):
-        print(f"Customer selects:\n{total_services['Regular']}\n")
+        print(f"Customer selects:\n{total_services['Regular']}", cash("$100.00"), "\n")
         sleep(0.5)
         print("Measure Length and width of exterior for price")
         l = float(input("Length: \t"))
@@ -202,7 +203,7 @@ def customer_transaction(selection, discount):
         totals.append(r_total_before_discount)
 
     elif selection == int(2):
-        print(f"Customer selects:\n {total_services['Premium']}")
+        print(f"Customer selects:\n {total_services['Premium']}", cash("$200.00"), "\n")
         print("Measure Length and width of exterior for price")
         l = float(input("Length: \t"))
         w = float(input("Width: \t"))
@@ -214,21 +215,21 @@ def customer_transaction(selection, discount):
         totals.append(p_total_before_discount)
 
     elif selection == int(3):
-        print(f"Customer selects:\n {total_services['Outdoor']}")
+        print(f"Customer selects:\n {total_services['Outdoor']}", cash("$300.00"), "\n")
         print("Measure Length and width of exterior for price")
         l = int(input("Length: \t"))
         w = int(input("Width: \t"))
         outdoor_area = l * w
         outdoor_labor = labor_charge(outdoor_area)
         s3 = LIST_PRICE[2]
-        r_total_before_discount = price_per_house(s3, outdoor_labor)
-        totals.append(r_total_before_discount)
+        o_total_before_discount = price_per_house(s3, outdoor_labor)
+        totals.append(o_total_before_discount)
 
     return totals
 
 
 def price_per_house(selection, labor):
-    p("price_per_house function line 254 ")
+    """price per house"""
     LIST_PRICE = [100.00, 200.00, 300.00]
     cash = text_colors("green")
 
@@ -257,6 +258,7 @@ def price_per_house(selection, labor):
 
 def get_discount(total):
     """calculate discount"""
+
     dis = total[0] * 15 / 100
     print("getting discount...")
     return dis
@@ -264,6 +266,7 @@ def get_discount(total):
 
 def labor_charge(area):
     """calculate labor"""
+
     labor = area * 0.15
     cash = text_colors("green")
     print(cash("labor: "), labor)
@@ -272,27 +275,40 @@ def labor_charge(area):
 
 def final_price(reg_price=0, discount=0):
     """get final price"""
+
     final_discount_price = reg_price - discount
     return final_discount_price
 
 
 def display_customer_info(c_names, c_address, c_discounts, c_totals):
     """print daily info + cash flow"""
-
+    p("\n")
     len_cust = len(c_names)
     i = 0
-    p("\n *** Todays Customer Info...\n")
+    p("{:<15}{:>51}".format("*** Todays Customer Info...", "Store ID: 3214"))
+    print("\n")
     print(
-        "{:<15}\t{:<20}\t{:<20}\t{:<15} ".format(
-            "Name", "Address", "Discount", "Total Cost"
+        "{"
+        ":<15}\t{"
+        ":<20}\t{"
+        ":<20}\t{"
+        ":<15}".format(
+            "Name",
+            "Address",
+            "Discount",
+            "Total Cost",
         )
     )
     print(
-        "{:<15}\t{:<20}\t{:<20}\t{:<15} ".format(
+        "{"
+        ":<15}\t{"
+        ":<20}\t{"
+        ":<20}\t{"
+        ":<15}".format(
             "_______________",
             "_______________",
-            "__________",
-            "__________",
+            "_______________",
+            "_______________",
         )
     )
     while i < len_cust:
@@ -304,12 +320,12 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
         i = i + 1
 
     i = 0
-
     # c_totals is a nested list s and thus needs to be flattened before taking sum
     todays_total = sum(subtotals for sublists in c_totals for subtotals in sublists)
-    print("")
+
+    print("\n")
     tt = "{:.2f}".format(todays_total)
     print("{:>10}".format("Cash earned: "))
     print("{:<10}".format("-------------"))
     print("$" + tt)
-    print("")
+    print("\n")

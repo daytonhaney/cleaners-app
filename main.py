@@ -71,11 +71,6 @@ def main():
 
             discounts.append(c_discounts)  # for final function
 
-            print(
-                f"Name:{c_names}Address:{c_address}Discount:{discounts} c_discounts:{c_discounts}\n"
-            )
-            p("")
-
             user_interface()
             selection = cust_selection()
             c_data.append(selection)
@@ -85,15 +80,6 @@ def main():
             c_totals.append(
                 totals
             )  # the selection is the return of price_per_house inside customer_transaction
-
-            # debug info:
-            print(
-                "discount stack =",
-                pay(discounts),
-                c_discounts.append(discounts),
-                "totals before discount =",
-                c_totals,
-            )
 
             pay("\nFinal total:")
             print(c_totals)
