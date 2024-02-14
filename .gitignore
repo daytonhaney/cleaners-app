@@ -14,3 +14,4 @@ pycfg.
 **/**/*setup
 *qodana.yml
 *business_data.db
+*.editorconfig

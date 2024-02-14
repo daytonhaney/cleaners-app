@@ -47,8 +47,8 @@ def main():
             print(f"{DB} created in {path}")
             try:
                 db = create_database()
-                customers_table(create_database, cx_table_create)
-                e_table = employee_table(create_database, emp_table_create)
+                cust_table = customers_table(create_database, cx_table_create)
+                e_table = employee_table(db, emp_table_create)
             except Error as e:
                 print(f" {e}")
                 print(f"\nBusiness_data.db & table created: {DB} in current directory")
@@ -77,9 +77,7 @@ def main():
             p(selection)
 
             totals = customer_transaction(selection, discounts[-1])
-            c_totals.append(
-                totals
-            )  # the selection is the return of price_per_house inside customer_transaction
+            c_totals.append(totals)
 
             pay("\nFinal total:")
             print(c_totals)
@@ -89,14 +87,10 @@ def main():
 
                 if discount_stack == (1, True):
                     dis = get_discount(c_totals[-1])
-                    PRICE = totals.pop()  # price no dis
-                    # error can't multiply sequence by non-int type float in var
+                    PRICE = totals.pop()
 
                     print("\nPrice:", pay(PRICE))
-                    print("\nDiscount price: ", cash(dis))
-                    pay(PRICE)
                     final_total = final_price(PRICE, dis)
-                    # get both totals final_price()
                     banner()
                     print("\tFinal total after discount:")
                     print("\t{:.2f}".format(final_total))
