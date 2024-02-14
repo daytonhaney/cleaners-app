@@ -41,40 +41,39 @@ p = lambda p: print(p)
 
 def new_customer():
     """get customers"""
-    valid_name = False
     discount = int
     addr = ""
     age = ""
+    valid_name = False
 
-    name = input("Name: Press <Enter> to exit: \t")
-    if not name.strip():
-        sys.exit("come again soon'")
+    # if not name.strip():
+    #    sys.exit("come again soon'")
 
-    if name.isdigit() and name.isalpha():
-        print("error, letters only")
-        name = input("Name: \t")
+    name = input("Name: <Enter> to exit:  \t")
 
-    age = input("Age: \t")
-    if age.isalpha() is True:
-        print("error, numbers only")
+    if name.isalpha():
+        name = name.replace(" ", "")
+        name = name.capitalize()
+        valid_name = True
+
         age = input("Age: \t")
+        if age.isalpha() is True:
+            print("error, numbers only")
+            age = input("Age: \t")
 
-    if int(64) < int(age) < int(120):
-        discount = int(1), True
-        print("applying discounts...!")
-        sleep(0.5)
-        cash = text_colors("green")
-        print(cash("-15%"), "discount applied!")
+        if int(64) < int(age) < int(999):
+            discount = int(1), True
+            print("applying discounts...!")
+            sleep(0.5)
+            cash = text_colors("green")
+            print(cash("-15%"), "discount applied!")
 
-    else:
-        discount = int(0), False
+        else:
+            discount = int(0), False
 
-    address = input("Enter address: \t")
-    addr = address.replace(" ", "") and addr.upper()
-    name = name.replace(" ", "") and name.upper()
-    valid_name = True
-    print(f"Welcome, {name}", "\n")
-    return valid_name, name, addr, discount
+        address = input("Enter address: \t")
+        addr = address.replace(" ", "") and address.capitalize()
+    return name, valid_name, discount, addr
 
 
 def banner():
@@ -194,7 +193,6 @@ def customer_transaction(selection, discount):
         print(f"Customer selects:\n{total_services['Regular']}\n")
         sleep(0.5)
         print("Measure Length and width of exterior for price")
-
         l = float(input("Length: \t"))
         w = float(input("Width: \t"))
         area = l * w
@@ -276,3 +274,42 @@ def final_price(reg_price=0, discount=0):
     """get final price"""
     final_discount_price = reg_price - discount
     return final_discount_price
+
+
+def display_customer_info(c_names, c_address, c_discounts, c_totals):
+    """print daily info + cash flow"""
+
+    len_cust = len(c_names)
+    i = 0
+    p("\n *** Todays Customer Info...\n")
+    print(
+        "{:<15}\t{:<20}\t{:<20}\t{:<15} ".format(
+            "Name", "Address", "Discount", "Total Cost"
+        )
+    )
+    print(
+        "{:<15}\t{:<20}\t{:<20}\t{:<15} ".format(
+            "_______________",
+            "_______________",
+            "__________",
+            "__________",
+        )
+    )
+    while i < len_cust:
+        print(c_names[i], end="\t\t")
+        print(c_address[i], end="\t\t")
+        print(c_discounts[i], end="\t\t")
+        print(c_totals[i], end="\t\t")
+        print("")
+        i = i + 1
+
+    i = 0
+
+    # c_totals is a nested list s and thus needs to be flattened before taking sum
+    todays_total = sum(subtotals for sublists in c_totals for subtotals in sublists)
+    print("")
+    tt = "{:.2f}".format(todays_total)
+    print("{:>10}".format("Cash earned: "))
+    print("{:<10}".format("-------------"))
+    print("$" + tt)
+    print("")
