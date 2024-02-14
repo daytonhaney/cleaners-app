@@ -118,5 +118,13 @@ def main():
 
     display_customer_info(c_names, c_address, discounts, c_totals)
 
+    backup = input(f"Backup {DB}?(y/n) \t ")
+    if backup == str("Y") or backup == str("y"):
+        check_ = os.path.isfile("business_data.db")
+        if check_:
+            backup_database()
+    else:
+        pass
+
 
 main()
