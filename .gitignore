@@ -12,4 +12,5 @@ lib*
 lib64*
 pycfg.
 **/**/*setup
-*qodana.ymal
+*qodana.yml
+*business_data.db

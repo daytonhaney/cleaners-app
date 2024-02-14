@@ -15,6 +15,11 @@ name text  not null,
 street text not null,
 amount_paid integer not null)"""
 
+emp_table_create = """create table if not exists employees (
+id integer primary key autoincrement,
+name text not null,
+street text not null,
+badge_id integer not null)"""
 
 
 def create_database():
@@ -50,7 +55,7 @@ def employee_table(con, emp_table_create):
     "create table - employees"
 
     emp_table_create = """create table if not exists employees (
-    id integer primary key auto increment,
+    id integer primary key autoincrement,
     name text not null,
     street text not null,
     badge_id integer not null)"""

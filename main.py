@@ -48,6 +48,7 @@ def main():
             try:
                 db = create_database()
                 customers_table(create_database, cx_table_create)
+                e_table = employee_table(create_database, emp_table_create)
             except Error as e:
                 print(f" {e}")
                 print(f"\nBusiness_data.db & table created: {DB} in current directory")
