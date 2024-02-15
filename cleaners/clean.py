@@ -26,16 +26,18 @@ def get_employees():
     print("\nManager:")
     name = "Mike Chambers"
     date = datetime.now().strftime("%A, %d, %B %Y %I:%M%p")
-    my_class = "North East"
+    address = "123 Main Street"
+    region = "North East"
     badge_id = "MC98342"
-    employee = name, date, my_class, badge_id
+    employee = name, date, region, badge_id
 
-    for i in name, date, my_class, badge_id:
+    for i in name, date, address, region, badge_id:
         print(i)
-
     print("")
+
     employee_list.append(employee)
-    return employee_list
+
+    return name, address, region, badge_id, employee_list
 
 
 p = lambda p: print(p)
@@ -52,11 +54,11 @@ def new_customer():
     name = input("Name: <Enter> to exit  \t")
 
     if name.isalpha():
-        # name = name.replace(" ", "")
         name = name.capitalize()
         valid_name = True
 
         age = input("Age: \t")
+
         if age.isalpha() is True:
             print("error, numbers only")
             age = input("Age: \t")
@@ -76,7 +78,6 @@ def new_customer():
 
         address = input("Enter address: \t")
         addr = address.capitalize()
-
     return name, valid_name, discount, addr
 
 
@@ -224,7 +225,6 @@ def customer_transaction(selection, discount):
         s3 = LIST_PRICE[2]
         o_total_before_discount = price_per_house(s3, outdoor_labor)
         totals.append(o_total_before_discount)
-
     return totals
 
 
@@ -238,7 +238,6 @@ def price_per_house(selection, labor):
         reg_before_discount = total
         print("{:.2f}".format(float(reg_before_discount)))
         cash(reg_before_discount)
-
         return reg_before_discount
 
     elif selection == LIST_PRICE[1]:

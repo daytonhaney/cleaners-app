@@ -58,7 +58,7 @@ def main():
     while customers:
 
         employee_list = get_employees()
-        employee_list.append(e_data)
+        e_data.append(employee_list)
 
         cust_names, valid_name, discount, cust_addrs = new_customer()
         customers = valid_name

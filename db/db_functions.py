@@ -15,10 +15,12 @@ name text  not null,
 street text not null,
 amount_paid integer not null)"""
 
+
 emp_table_create = """create table if not exists employees (
 id integer primary key autoincrement,
 name text not null,
 street text not null,
+region text not null,
 badge_id integer not null)"""
 
 
@@ -58,7 +60,9 @@ def employee_table(con, emp_table_create):
     id integer primary key autoincrement,
     name text not null,
     street text not null,
+    region text not null,
     badge_id integer not null)"""
+
     con = sqlite3.connect(DB)
     try:
         cur = con.cursor()
@@ -91,8 +95,20 @@ def insert_customer(valid_cx, valid_addr, amount_paid, discount=bool):
     """insert customer"""
     # 0 or 1 if discount is true
 
-    q = "insert into customers_table (name,street,amount_paid, discount) values (?,?,?)"
+    q = "insert into customers (name,street,amount_paid, discount) values (?,?,?)"
     data = (valid_cx, valid_addr, amount_paid, discount)
+    query_exec(q, data)
+
+
+def insert_employee(name, address, region, badge_id):
+    """insert employee"""
+    q = "insert into employees (name,street,region,badge_id) values (?,?,?,?)"
+    data = (
+        name,
+        address,
+        region,
+        badge_id,
+    )
     query_exec(q, data)
 
 
