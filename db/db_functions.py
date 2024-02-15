@@ -9,17 +9,17 @@ from sqlite3 import Error
 
 DB = "business_data.db"
 
-cx_table_create = """create table if not exists customers (
+cx_table = """create table if not exists customers (
 id integer primary key autoincrement,
 name text  not null,
-street text not null,
+address text not null,
 amount_paid integer not null)"""
 
 
-emp_table_create = """create table if not exists employees (
+emp_table = """create table if not exists employees (
 id integer primary key autoincrement,
 name text not null,
-street text not null,
+address text not null,
 region text not null,
 badge_id integer not null)"""
 
@@ -53,38 +53,26 @@ def query_exec(q, data=None):
         cur.close()
 
 
-def employee_table(con, emp_table_create):
+def employee_table(con, emp_table):
     "create table - employees"
-
-    emp_table_create = """create table if not exists employees (
-    id integer primary key autoincrement,
-    name text not null,
-    street text not null,
-    region text not null,
-    badge_id integer not null)"""
 
     con = sqlite3.connect(DB)
     try:
         cur = con.cursor()
-        cur.execute(emp_table_create)
+        cur.execute(emp_table)
 
     except Error as e:
         print(f"{e}")
     return con
 
 
-def customers_table(con, cx_table_create):
+def customers_table(con, cx_table):
     """create table - customers"""
 
-    cx_table_create = """create table if not exists customers (
-    id integer primary key autoincrement,
-    name text  not null,
-    street text not null,
-    amount_paid integer not null)"""
     con = sqlite3.connect(DB)
     try:
         cur = con.cursor()
-        cur.execute(cx_table_create)
+        cur.execute(cx_table)
 
     except Error as e:
         print(f"{e}")
@@ -102,7 +90,7 @@ def insert_customer(valid_cx, valid_addr, amount_paid, discount=bool):
 
 def insert_employee(name, address, region, badge_id):
     """insert employee"""
-    q = "insert into employees (name,street,region,badge_id) values (?,?,?,?)"
+    q = "insert into employees (name,address,region,badge_id) values (?,?,?,?)"
     data = (
         name,
         address,

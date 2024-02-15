@@ -43,12 +43,12 @@ def main():
             print(f"DB already exists in {path}")
         else:
             print("Creating database...\n")
-            sleep(0.1)
-            print(f"{DB} created in {path}")
+            sleep(0.3)
+            print(f"{path} created")
             try:
                 db = create_database()
-                cust_table = customers_table(create_database, cx_table_create)
-                e_table = employee_table(db, emp_table_create)
+                customers_table(create_database, cx_table)
+                employee_table(db, emp_table)
             except Error as e:
                 print(f" {e}")
                 print(f"\nBusiness_data.db & table created: {DB} in current directory")

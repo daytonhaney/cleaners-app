@@ -29,18 +29,31 @@ def get_employees():
     address = "123 Main Street"
     region = "North East"
     badge_id = "MC98342"
-    employee = name, date, region, badge_id
+    employee = (
+        name,
+        date,
+        region,
+        badge_id,
+    )
 
+    # insert_employee(name, address, region, badge_id)
     for i in name, date, address, region, badge_id:
         print(i)
     print("")
 
+    con = sqlite3.connect(DB)
+    cur = con.cursor()
+
+    cur.execute("SELECT COUNT(*) FROM employees")
+    if cur.fetchone()[0] == 0:
+        insert_employee(name, address, region, badge_id)
+    else:
+        pass
     employee_list.append(employee)
+    return employee_list
 
-    return name, address, region, badge_id, employee_list
 
-
-p = lambda p: print(p)
+p = lambda p: print(p)  # p("debug")
 
 
 def new_customer():
