@@ -66,7 +66,7 @@ def employee_table(con, emp_table):
     return con
 
 
-def customers_table(con, cx_table):
+def customer_table(con, cx_table):
     """create table - customers"""
 
     con = sqlite3.connect(DB)
@@ -106,6 +106,24 @@ def get_customer_name(name):
     data = (name,)
     cur = query_exec(q, data)
     return cur.fetchall()
+
+
+def e_table_exists(db, table):
+    """check if table exists"""
+    q = """select count(name) from sqlite_master where type='table' and name='employees'"""
+    con = sqlite3.connect(DB)
+    cur = con.cursor()
+    cur.execute(q)
+    if cur.fetchone()[0] == 1:
+        table = True
+        # print("t")
+    else:
+        table = False
+        # print("f")
+    con.commit()
+    return table
+
+    return table is not None
 
 
 def backup_database():

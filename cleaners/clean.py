@@ -41,15 +41,15 @@ def get_employees():
         print(i)
     print("")
 
-    # create employee table if not exists
-    if sqlite3.connect(DB):
-        con = sqlite3.connect(DB)
-        cur = con.cursor()
-        cur.execute("SELECT COUNT(*) FROM employees")
-        if cur.fetchone()[0] == 0:
-            insert_employee(name, address, region, badge_id)
+    # create table if not exists to avoid duplicates on restart
+
+    table = e_table_exists(DB, "employees")
+    if table is True:
+        new_table = employee_table(DB, emp_table)
+        insert_employee(name, address, region, badge_id)
     else:
-        pass
+        print("Table does not exist")
+
     employee_list.append(employee)
     return employee_list
 

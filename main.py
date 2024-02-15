@@ -47,7 +47,7 @@ def main():
             print(f"{path} created")
             try:
                 db = create_database()
-                customers_table(create_database, cx_table)
+                customer_table(db, cx_table)
                 employee_table(db, emp_table)
             except Error as e:
                 print(f" {e}")
