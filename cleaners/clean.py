@@ -41,12 +41,13 @@ def get_employees():
         print(i)
     print("")
 
-    con = sqlite3.connect(DB)
-    cur = con.cursor()
-
-    cur.execute("SELECT COUNT(*) FROM employees")
-    if cur.fetchone()[0] == 0:
-        insert_employee(name, address, region, badge_id)
+    # create employee table if not exists
+    if sqlite3.connect(DB):
+        con = sqlite3.connect(DB)
+        cur = con.cursor()
+        cur.execute("SELECT COUNT(*) FROM employees")
+        if cur.fetchone()[0] == 0:
+            insert_employee(name, address, region, badge_id)
     else:
         pass
     employee_list.append(employee)
