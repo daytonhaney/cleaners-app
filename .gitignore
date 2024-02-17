@@ -1,5 +1,5 @@
 
-.*__pychached__/
+*__pychached__/
 *.pyc
 *.pyo
 *.so

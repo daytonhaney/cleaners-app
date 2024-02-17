@@ -27,4 +27,18 @@ function recover_database(){
 }
 
 
-#recover_database
+
+function source_backups(){
+
+        
+    echo "These are the backups you've got:"
+    source "$HOME/database-backups/business_data_backup-2024-02-14.db"
+    source "$HOME/$DESTINATION_DIR/$BACKUP_NAME.gz"
+
+
+}
+
+
+
+# source_backups
+# recover_database

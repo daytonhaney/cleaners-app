@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-# connection and first table tested Ok
-# in progress
-#
+import os
 import sqlite3
 import subprocess
 from sqlite3 import Error
@@ -123,10 +121,15 @@ def e_table_exists(db, table):
     con.commit()
     return table
 
-    return table is not None
-
 
 def backup_database():
     """backup database"""
-    subprocess.run(["chmod", "u+x", "backup.sh"])
-    subprocess.run(["./backup.sh"])
+
+    backup = input(f"Backup {DB}[y/n]? \t ")
+    if backup == str("Y") or backup == str("y"):
+        data_backups = os.path.isfile("business_data.db")
+        if data_backups:
+            subprocess.run(["chmod", "u+x", "backup.sh"])
+            subprocess.run(["./backup.sh"])
+        else:
+            print("DB not found")

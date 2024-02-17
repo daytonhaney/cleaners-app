@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import os.path
-import sqlite3
-import sys
 from datetime import datetime
 from sqlite3 import Error
 from time import sleep
@@ -31,7 +29,7 @@ def main():
     c_discounts = list()
     c_totals = list()
 
-    db_create = input("\nCreate sqlite3 database?(y/n) \t ")
+    db_create = input("\nCreate sqlite3 database [y/n]? \t ")
 
     cash = text_colors("green")
     pay = text_colors("red")
@@ -74,7 +72,7 @@ def main():
             user_interface()
             selection = cust_selection()
             c_data.append(selection)
-            p(selection)
+            print(selection)
 
             totals = customer_transaction(selection, discounts[-1])
             c_totals.append(totals)
@@ -98,14 +96,7 @@ def main():
                 continue
 
     display_customer_info(c_names, c_address, discounts, c_totals)
-
-    backup = input(f"Backup {DB}?(y/n) \t ")
-    if backup == str("Y") or backup == str("y"):
-        check_ = os.path.isfile("business_data.db")
-        if check_:
-            backup_database()
-    else:
-        pass
+    check_backups = backup_database()
 
 
 main()

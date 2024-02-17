@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
-import os
 import re
-import sqlite3
-import sys
 from datetime import datetime
 from sqlite3 import Error
 from time import sleep, time
@@ -19,16 +16,16 @@ total_services = {
 
 
 def get_employees():
-    "get employees"
+    """get employees"""
 
     employee_list = []
 
     print("\nManager:")
-    name = "Mike Chambers"
+    name = "Cam Poe"
     date = datetime.now().strftime("%A, %d, %B %Y %I:%M%p")
-    address = "123 Main Street"
-    region = "North East"
-    badge_id = "MC98342"
+    address = "12 Pinball Road"
+    region = "Sierra Nevada"
+    badge_id = "JB3HBIRD"
     employee = (
         name,
         date,
@@ -45,10 +42,8 @@ def get_employees():
 
     table = e_table_exists(DB, "employees")
     if table is True:
-        new_table = employee_table(DB, emp_table)
+        new_employee_table = employee_table(DB, emp_table)
         insert_employee(name, address, region, badge_id)
-    else:
-        print("Table does not exist")
 
     employee_list.append(employee)
     return employee_list
@@ -66,16 +61,17 @@ def new_customer():
     valid_name = False
 
     name = input("Name: <Enter> to exit  \t")
+    fname = name.replace(" ", "")
 
-    if name.isalpha():
-        name = name.capitalize()
+    if fname.isalpha():
+        name = name.title()
         valid_name = True
 
         age = input("Age: \t")
-
         if age.isalpha() is True:
-            print("error, numbers only")
+            print("Error, numbers only")
             age = input("Age: \t")
+            age = age.replace(" ", "")
             # added incase input chars in age
             age1 = re.findall(r"\b\d+\b", age)
             age = age1[0]
@@ -137,8 +133,8 @@ def user_interface():
         cash("\t\t$300"),
     ]:
         print("{:>20}{:>20}{:>20}".format(*display3))
-
     print("")
+
     d = "Age 65+ 15% Discount"
     d_banner = d.center(70)
     print(d_banner)
@@ -297,15 +293,13 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
     """print daily info + cash flow"""
     p("\n")
     len_cust = len(c_names)
+
     i = 0
     p("{:<15}{:>51}".format("*** Todays Customer Info...", "Store ID: 3214"))
     print("\n")
+
     print(
-        "{"
-        ":<15}\t{"
-        ":<20}\t{"
-        ":<20}\t{"
-        ":<15}".format(
+        "{:<20}\t{:<20}\t{:<20}\t{:<10}".format(
             "Name",
             "Address",
             "Discount",
@@ -313,25 +307,26 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
         )
     )
     print(
-        "{"
-        ":<15}\t{"
-        ":<20}\t{"
-        ":<20}\t{"
-        ":<15}".format(
+        "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
             "_______________",
             "_______________",
-            "_______________",
-            "_______________",
+            "_____________",
+            "_____________",
         )
     )
     while i < len_cust:
-        print(c_names[i], end="\t\t")
-        print(c_address[i], end="\t\t")
-        print(c_discounts[i], end="\t\t")
-        print(c_totals[i], end="\t\t")
+
+        print(
+            "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
+                c_names[i],
+                c_address[i],
+                str(c_discounts[i]),
+                str(c_totals[i]),
+            )
+        )
+
         print("")
         i = i + 1
-
     i = 0
     # c_totals is a nested list s and thus needs to be flattened before taking sum
     todays_total = sum(subtotals for sublists in c_totals for subtotals in sublists)
