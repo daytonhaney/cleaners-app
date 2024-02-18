@@ -20,7 +20,7 @@ def get_employees():
 
     employee_list = []
 
-    print("\nManager:")
+    print("\nManager:\n")
     name = "Cam Poe"
     date = datetime.now().strftime("%A, %d, %B %Y %I:%M%p")
     address = "12 Pinball Road"
@@ -33,17 +33,16 @@ def get_employees():
         badge_id,
     )
 
-    # insert_employee(name, address, region, badge_id)
     for i in name, date, address, region, badge_id:
         print(i)
     print("")
 
-    # create table if not exists to avoid duplicates on restart
-
-    table = e_table_exists(DB, "employees")
-    if table is True:
-        new_employee_table = employee_table(DB, emp_table)
-        insert_employee(name, address, region, badge_id)
+    db_path = "./business_data.db"
+    if os.path.isfile(db_path):
+        if e_table_exists(DB, emp_table):
+            insert_employee(name, address, region, badge_id)
+    elif not os.path.isfile(db_path):
+        pass
 
     employee_list.append(employee)
     return employee_list
@@ -162,7 +161,6 @@ def user_interface():
     print("")
     print("$.15 per square foot of house is charged for labor\n")
     print("Chose cleaning package...")
-    sleep(0.4)
 
 
 def cust_selection():
@@ -293,8 +291,6 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
     """print daily info + cash flow"""
     p("\n")
     len_cust = len(c_names)
-
-    i = 0
     p("{:<15}{:>51}".format("*** Todays Customer Info...", "Store ID: 3214"))
     print("\n")
 
@@ -314,6 +310,7 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
             "_____________",
         )
     )
+    i = 0
     while i < len_cust:
 
         print(
