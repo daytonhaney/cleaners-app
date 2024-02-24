@@ -5,8 +5,9 @@ from datetime import datetime
 from sqlite3 import Error
 from time import sleep, time
 
-from cleaners.fig import io_figlets
-from db.db_functions import *
+###############################################################################
+## IO Cleaners Service                                                        #
+###############################################################################
 
 total_services = {
     "Regular": "General-Tidying, Sweep, Dust, Mop",
@@ -323,7 +324,6 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
         print("")
         i = i + 1
     i = 0
-    # c_totals is a nested list s and thus needs to be flattened before taking sum
     # todays_total = sum(subtotals for sublists in c_totals for subtotals in sublists)
 
     print("\n")
@@ -331,3 +331,302 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
     print("{:<80}".format("Cash earned: "))
     print("{:<80}".format("-------------"))
     print("$", tt)
+
+
+def io_figlets():
+    """vanilla py"""
+
+    io_figlets = [
+        """
+     ___          ___      ___        _   
+    |_ _|_ __    ( _ )    / _ \ _   _| |_ 
+     | || '_ \   / _ \/\ | | | | | | | __|
+     | || | | | | (_>  < | |_| | |_| | |_ 
+    |___|_| |_|  \___/\/  \___/ \__,_|\__|
+                                      
+      ____ _                  _                ____                  
+     / ___| | ___  __ _ _ __ (_)_ __   __ _   / ___|___  _ __ _ __   
+    | |   | |/ _ \/ _` | '_ \| | '_ \ / _` | | |   / _ \| '__| '_ \  
+    | |___| |  __/ (_| | | | | | | | | (_| | | |__| (_) | |  | |_) | 
+     \____|_|\___|\__,_|_| |_|_|_| |_|\__, |  \____\___/|_|  | .__(_)
+                                      |___/                  |_|     
+    """
+    ]
+    print(io_figlets[-1])
+
+
+################################################################################
+## database stuff                                                              #
+################################################################################
+
+
+import os
+import sqlite3
+import subprocess
+from sqlite3 import Error
+
+DB = "./business_data.db"
+
+cx_table = """create table if not exists customers (
+id integer primary key autoincrement,
+name text  not null,
+address text not null,
+amount_paid integer not null)"""
+# discounts integer not null) """
+
+emp_table = """create table if not exists employees (
+id integer primary key autoincrement,
+name text not null,
+address text not null,
+region text not null,
+badge_id integer not null)"""
+
+
+def does_db_exist(DB):
+    """check if db exists"""
+    if DB == os.path.isfile(DB):
+        print("")
+        return True
+
+
+def e_table_exists(db, table):
+    """check if table exists"""
+
+    q = """select count(name) from sqlite_master where type='table' and name='employees'"""
+    con = sqlite3.connect(DB)
+    cur = con.cursor()
+    cur.execute(q)
+    if cur.fetchone()[0] == 1:
+        table = True
+        # print("t")
+    else:
+        table = False
+        # print("f")
+    con.commit()
+    return table
+
+    # return table is not None
+
+
+def c_table_exists(db, table):
+    """check if table exists"""
+
+    q = """select count(name) from sqlite_master where type='table' and name='customers'"""
+    con = sqlite3.connect(DB)
+    cur = con.cursor()
+    cur.execute(q)
+    rows = cur.fetchone()[0]
+
+    if rows != 0:
+        c_table = True
+        # print("t")
+    else:
+        c_table = False
+        # print("f")
+    con.commit()
+    return c_table
+
+
+def create_database():
+    """create db"""
+    con = None
+    try:
+        con = sqlite3.connect(DB)
+        return con
+    except OSError as e:
+        print(f"Error in create_database: {e}")
+
+    return con
+
+
+def query_exec(q, data=None):
+    """query data"""
+
+    con = sqlite3.connect(DB)
+    cur = con.cursor()
+    try:
+        if data:
+            cur.execute(q, data)
+        else:
+            cur.execute(q)
+        con.commit()
+        return cur
+    except Error as e:
+        print(f"Error in query_exec: {e}")
+    finally:
+        cur.close()
+
+
+def employee_table(con, emp_table):
+    """create table - employees"""
+    """conditionsals added to avoid duplicates on program restarts"""
+    new_e_table = False
+    con = sqlite3.connect(DB)
+    if con:
+        new_e_table = True
+        try:
+            cur = con.cursor()
+            cur.execute(emp_table)
+            # print("e table created")
+            con.close()
+        except Error as e:
+            print(f"error in employee_table: {e}")
+    return new_e_table, con
+
+
+def customer_table(con, cx_table):
+    """create table - customers"""
+
+    con = sqlite3.connect(DB)
+    try:
+        cur = con.cursor()
+        cur.execute(cx_table)
+        # print("c table created")
+
+    except Error as e:
+        print(f"Error in customer_table: {e}")
+    return con
+
+
+def insert_customer(valid_cx, valid_addr, amount_paid):
+    """insert customer"""
+
+    q = "insert into customers (name,street,amount_paid) values (?,?,?)"
+    data = (
+        valid_cx,
+        valid_addr,
+        amount_paid,
+        # discounts,
+    )
+    query_exec(q, data)
+
+
+def insert_employee(name, address, region, badge_id):
+    """insert employee"""
+
+    q = """INSERT INTO employees (name, address, region, badge_id) VALUES (?, ?, ?, ?)"""
+    q1 = """select count(*) from 'employees'"""
+    con = sqlite3.connect(DB)
+    cur = con.cursor()
+    cur.execute(q1)
+    e_rows = cur.fetchone()[0]
+    try:
+        if e_rows == 0:
+            data = (name, address, region, badge_id)
+            query_exec(q, data)
+            con.commit()
+        else:
+            print("record exists")
+    except Error as e:
+        print(f"error in insert_employee: {e}")
+    con.close()
+
+
+def get_customer_name(name):
+    """query data"""
+    q = "select * from customers where name = ?:"
+    data = (name,)
+    cur = query_exec(q, data)
+    return cur.fetchall()
+
+
+def provision_database():
+    """return a db for conditionals"""
+
+    db_create = input("\nCreate sqlite3 database [y/n]? \t ")
+    if db_create in ("y", "yes"):
+        path = "./business_data.db"
+        if os.path.isfile(path):
+            print(f"DB already exists in {path}")
+
+        if not os.path.isfile(path):
+            try:
+                db = create_database()
+                # print(f"{db} created ok")
+                customer_table(db, cx_table)
+                # print("customer table created ok")
+                employee_table(db, emp_table)
+                # print("employee table created ok")
+                return db
+            except Error as e:
+                print(f" {e}")
+            print(f"Databade and tables created in {path}")
+    elif db_create != ("y", "yes"):
+        print("db not created")
+
+
+def backup_database():
+    """backup database"""
+
+    backup = input(f"Backup {DB} [y/n]? \t ")
+    if backup in ["y", "yes", "Y", "YES"]:
+        data_backups = os.path.isfile("business_data.db")
+        if data_backups:
+            subprocess.run(["chmod", "u+x", "backup.sh"])
+            subprocess.run(["./backup.sh"])
+            exit()
+        else:
+            print("Run ./backup.sh to create backup")
+            exit()
+
+
+################################################################################
+## main                                                                        #
+################################################################################
+
+
+import os.path
+from datetime import datetime
+
+
+def main():
+    """main fn"""
+
+    # p("begin main")
+    customers = True
+    cust_names = None
+    cust_addrs = None
+    c_names = list()
+    c_address = list()
+    c_discounts = list()
+    c_totals = list()
+
+    discounts = []
+    c_data = []
+
+    cash = text_colors("green")
+    check_db = provision_database()
+
+    while customers:
+
+        employee_list = get_employees()
+        cust_names, valid_name, discount, cust_addrs = new_customer()
+        customers = valid_name
+        if valid_name:
+            c_names.append(cust_names)
+            c_address.append(cust_addrs)
+            discounts.append(discount)
+            user_interface()
+            if discount == (1, True):
+                # discount final total
+                selection = cust_selection()
+                totals = customer_transaction(selection, discounts[-1])
+                final_total = totals[-1]
+                dis = get_discount(final_total)
+                f_discount = "{:.2f}".format(dis)
+                print("Dis:", cash(dis))
+                dis_ft = final_price(final_total, dis)
+                c_totals.append(dis_ft)
+                c_discounts.append(f_discount)
+            else:
+                dis = 0
+                c_discounts.append(dis)
+                selection = cust_selection()
+                ft = customer_transaction(selection, discounts[-1])
+                c_totals.extend(ft)
+
+    display_customer_info(c_names, c_address, c_discounts, c_totals)
+    backup_database()
+
+
+main()
