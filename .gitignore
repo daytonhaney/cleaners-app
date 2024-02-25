@@ -1,4 +1,5 @@
 
+*.cleaners-app.main.py
 *__pychached__/
 *.pyc
 *.pyo

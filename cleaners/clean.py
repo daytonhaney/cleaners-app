@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
+import os
 import re
 from datetime import datetime
 from sqlite3 import Error
 from time import sleep, time
 
 from cleaners.fig import io_figlets
-from db.db_functions import *
+from db.db_functions import DB, e_table_exists, emp_table, insert_employee
 
 total_services = {
     "Regular": "General-Tidying, Sweep, Dust, Mop",
@@ -87,6 +88,7 @@ def new_customer():
 
         address = input("Enter address: \t")
         addr = address.capitalize()
+
     return name, valid_name, discount, addr
 
 
@@ -207,6 +209,7 @@ def customer_transaction(selection, discount):
         w = float(input("Width: \t"))
         area = l * w
         labor = labor_charge(area)
+        print("Area: \t", area)
         s = LIST_PRICE[0]
         r_total_before_discount = price_per_house(s, labor)
         totals.append(r_total_before_discount)
@@ -218,7 +221,7 @@ def customer_transaction(selection, discount):
         w = float(input("Width: \t"))
         premium_area = l * w
         labor2 = (lambda area: (area) * 0.15)(premium_area)
-        print("area for pre = ", premium_area)
+        print("Area: \t", premium_area)
         s2 = LIST_PRICE[1]
         p_total_before_discount = price_per_house(s2, labor2)
         totals.append(p_total_before_discount)
@@ -230,6 +233,7 @@ def customer_transaction(selection, discount):
         w = int(input("Width: \t"))
         outdoor_area = l * w
         outdoor_labor = labor_charge(outdoor_area)
+        print("Area: \t", outdoor_area)
         s3 = LIST_PRICE[2]
         o_total_before_discount = price_per_house(s3, outdoor_labor)
         totals.append(o_total_before_discount)
@@ -289,9 +293,8 @@ def final_price(reg_price=0, discount=0):
 
 def display_customer_info(c_names, c_address, c_discounts, c_totals):
     """print daily info + cash flow"""
-    p("\n")
-    len_cust = len(c_names)
-    p("{:<15}{:>51}".format("*** Todays Customer Info...", "Store ID: 3214"))
+
+    print("{:<15}{:>51}".format("*** Todays Customer Info...", "Store ID: 3214"))
     print("\n")
 
     print(
@@ -303,7 +306,7 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
         )
     )
     print(
-        "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
+        "{:<20}\t{:<20}\t{:<20}\t{:<10}".format(
             "_______________",
             "_______________",
             "_____________",
@@ -311,6 +314,7 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
         )
     )
     i = 0
+    len_cust = len(c_names)
     while i < len_cust:
         print(
             "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
@@ -323,7 +327,6 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
         print("")
         i = i + 1
     i = 0
-    # c_totals is a nested list s and thus needs to be flattened before taking sum
     # todays_total = sum(subtotals for sublists in c_totals for subtotals in sublists)
 
     print("\n")
@@ -331,3 +334,4 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
     print("{:<80}".format("Cash earned: "))
     print("{:<80}".format("-------------"))
     print("$", tt)
+    print("\n")

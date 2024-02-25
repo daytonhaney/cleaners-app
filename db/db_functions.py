@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import sqlite3
 import subprocess
@@ -7,19 +5,20 @@ from sqlite3 import Error
 
 DB = "./business_data.db"
 
+
 cx_table = """create table if not exists customers (
-id integer primary key autoincrement,
-name text  not null,
-address text not null,
-amount_paid integer not null)"""
-# discounts integer not null) """
+    id integer primary key autoincrement,
+    name text  not null,
+    address text not null,
+    amount_paid not null,
+    discount not null) """
 
 emp_table = """create table if not exists employees (
-id integer primary key autoincrement,
-name text not null,
-address text not null,
-region text not null,
-badge_id integer not null)"""
+    id integer primary key autoincrement,
+    name text not null,
+    address text not null,
+    region text not null,
+    badge_id integer not null)"""
 
 
 def does_db_exist(DB):
@@ -100,6 +99,7 @@ def query_exec(q, data=None):
 def employee_table(con, emp_table):
     """create table - employees"""
     """conditionsals added to avoid duplicates on program restarts"""
+
     new_e_table = False
     con = sqlite3.connect(DB)
     if con:
@@ -128,15 +128,16 @@ def customer_table(con, cx_table):
     return con
 
 
-def insert_customer(valid_cx, valid_addr, amount_paid):
-    """insert customer"""
+def insert_cust_totals(name, addr, amount_paid=0, discount=0):
+    """insert customer name and address,
+    set defaults to 0 for amount_paid and discount until payment is made"""
 
-    q = "insert into customers (name,street,amount_paid) values (?,?,?)"
+    q = """insert into customers (name,address,amount_paid,discount) values (?,?,?,?)"""
     data = (
-        valid_cx,
-        valid_addr,
+        name,
+        addr,
         amount_paid,
-        # discounts,
+        discount,
     )
     query_exec(q, data)
 
