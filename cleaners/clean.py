@@ -2,11 +2,12 @@
 
 import os
 import re
+import shutil
 from datetime import datetime
 from sqlite3 import Error
 from time import sleep, time
 
-from cleaners.fig import io_figlets
+from cleaners.fig import *
 from db.db_functions import DB, e_table_exists, emp_table, insert_employee
 
 total_services = {
@@ -21,7 +22,9 @@ def get_employees():
 
     employee_list = []
 
-    print("\nManager:")
+    _txt_ = shutil.get_terminal_size().columns
+    print("Manager:".center(_txt_))
+    print("")
     name = "Cam Poe"
     date = datetime.now().strftime("%A, %d, %B %Y %I:%M%p")
     address = "12 Pinball Road"
@@ -35,7 +38,7 @@ def get_employees():
     )
 
     for i in name, date, address, region, badge_id:
-        print(i)
+        centered_text(i)
     print("")
 
     db_path = "./business_data.db"
@@ -113,8 +116,9 @@ def text_colors(color):
 
 def user_interface():
     """ui"""
+    _txt_ = shutil.get_terminal_size().columns
 
-    io_figlets()
+    io_figlets(io_figlets_title)
     cash = text_colors("green")
     for display1 in [
         ["Regular:", "Premium:", "Outdoor:"],

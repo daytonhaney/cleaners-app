@@ -3,6 +3,9 @@ import sqlite3
 import subprocess
 from sqlite3 import Error
 
+from cleaners.clean import *
+from cleaners.fig import *
+
 DB = "./business_data.db"
 
 
@@ -174,8 +177,10 @@ def get_customer_name(name):
 def provision_database():
     """return a db for conditionals"""
 
-    db_create = input("\nCreate sqlite3 database [y/n]? \t ")
-    if db_create in ("y", "yes"):
+    _txt_ = shutil.get_terminal_size().columns
+    db_create = input(f"Create {DB} [y/n]?".center(_txt_))
+
+    if db_create.center(_txt_) in ("y", "yes"):
         path = "./business_data.db"
         if os.path.isfile(path):
             print(f"DB already exists in {path}")
@@ -193,7 +198,8 @@ def provision_database():
                 print(f" {e}")
             print(f"Databade and tables created in {path}")
     elif db_create != ("y", "yes"):
-        print("db not created")
+        print("DB not created".center(_txt_))
+        print("\n")
 
 
 def backup_database():

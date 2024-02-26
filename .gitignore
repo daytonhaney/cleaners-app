@@ -1,5 +1,6 @@
 
 *.cleaners-app.main.py
+*.cleaning.png
 *__pychached__/
 *.pyc
 *.pyo
