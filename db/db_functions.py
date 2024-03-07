@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+"""Cleaning Service sqlite3 database functions"""
+
 import os
 import sqlite3
 import subprocess
@@ -46,8 +49,6 @@ def e_table_exists(db, table):
         # print("f")
     con.commit()
     return table
-
-    # return table is not None
 
 
 def c_table_exists(db, table):
@@ -177,28 +178,22 @@ def get_customer_name(name):
 def provision_database():
     """return a db for conditionals"""
 
-    _txt_ = shutil.get_terminal_size().columns
-    db_create = input(f"Create {DB} [y/n]?".center(_txt_))
-
-    if db_create.center(_txt_) in ("y", "yes"):
+    db_create = input(f"Create sqlite3 {DB} [y/n]? \t ")
+    if db_create in ("y", "yes"):
         path = "./business_data.db"
         if os.path.isfile(path):
             print(f"DB already exists in {path}")
-
         if not os.path.isfile(path):
             try:
                 db = create_database()
-                # print(f"{db} created ok")
-                customer_table(db, cx_table)
-                # print("customer table created ok")
-                employee_table(db, emp_table)
-                # print("employee table created ok")
+                cx_new_tbl = customer_table(db, cx_table)
+                emp_new_tbl = employee_table(db, emp_table)
                 return db
             except Error as e:
                 print(f" {e}")
             print(f"Databade and tables created in {path}")
     elif db_create != ("y", "yes"):
-        print("DB not created".center(_txt_))
+        print("DB not created")
         print("\n")
 
 
@@ -212,6 +207,6 @@ def backup_database():
             subprocess.run(["chmod", "u+x", "backup.sh"])
             subprocess.run(["./backup.sh"])
             exit()
-        else:
-            print("Run ./backup.sh to create backup")
-            exit()
+    else:
+        print("Run ./backup.sh to create backup")
+        exit()

@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
+"""Cleaning Service console app"""
 
 import os
 import re
 import shutil
 from datetime import datetime
-from sqlite3 import Error
-from time import sleep, time
+from time import sleep
 
-from cleaners.fig import *
+from cleaners.fig import (
+    _txt_,
+    centered_input,
+    centered_text,
+    io_figlets,
+    io_figlets_title,
+    return_centered_input,
+)
 from db.db_functions import DB, e_table_exists, emp_table, insert_employee
 
 total_services = {
@@ -21,10 +28,7 @@ def get_employees():
     """get employees"""
 
     employee_list = []
-
-    _txt_ = shutil.get_terminal_size().columns
-    print("Manager:".center(_txt_))
-    print("")
+    mod = "Manager:"
     name = "Cam Poe"
     date = datetime.now().strftime("%A, %d, %B %Y %I:%M%p")
     address = "12 Pinball Road"
@@ -36,23 +40,17 @@ def get_employees():
         region,
         badge_id,
     )
-
-    for i in name, date, address, region, badge_id:
+    for i in mod, name, date, address, region, badge_id:
         centered_text(i)
     print("")
-
     db_path = "./business_data.db"
     if os.path.isfile(db_path):
         if e_table_exists(DB, emp_table):
             insert_employee(name, address, region, badge_id)
     elif not os.path.isfile(db_path):
         pass
-
     employee_list.append(employee)
     return employee_list
-
-
-p = lambda p: print(p)  # p("debug")
 
 
 def new_customer():
@@ -62,76 +60,45 @@ def new_customer():
     addr = ""
     age = ""
     valid_name = False
-
-    name = input("Name: <Enter> to exit  \t")
+    name = centered_input("Customer Name <Enter> to exit: ")
     fname = name.replace(" ", "")
-
     if fname.isalpha():
         name = name.title()
         valid_name = True
-
-        age = input("Age: \t")
+        age = centered_input("Enter age: ")
         if age.isalpha() is True:
             print("Error, numbers only")
             age = input("Age: \t")
             age = age.replace(" ", "")
-            # added incase input chars in age
             age1 = re.findall(r"\b\d+\b", age)
             age = age1[0]
-
         if int(64) < int(age) < int(999):
             discount = 1, True
-            print("applying discounts...!")
+            print("applying discounts...!".center(_txt_))
             sleep(0.5)
             cash = text_colors("green")
-            print(cash("-15%"), "discount applied!")
-
+            print(cash("-15%".center(_txt_)), "discount applied!".center(_txt_))
         else:
             discount = 0, False
-
-        address = input("Enter address: \t")
+        address = centered_input("Enter address: ")
         addr = address.capitalize()
-
     return name, valid_name, discount, addr
-
-
-def banner():
-    """ui"""
-
-    b = "=" * 78
-    print(b)
-
-
-def text_colors(color):
-    """ui"""
-
-    colors = {"RESET": "\033[m", "RED": "\033[31m", "GREEN": "\033[32m"}
-
-    def text(text):
-        c = colors.get(color.upper(), "")
-        return f"{c}{text}{colors['RESET']}"
-
-    return text
 
 
 def user_interface():
     """ui"""
     _txt_ = shutil.get_terminal_size().columns
-
-    io_figlets(io_figlets_title)
     cash = text_colors("green")
     for display1 in [
         ["Regular:", "Premium:", "Outdoor:"],
         ["Room Clean", "Regular +", "Mow"],
     ]:
         print("\n{:>20}{:>20}{:>20}".format(*display1))
-
     for display2 in [
         ["Dust", "Bathrooms", "Weed-Wack"],
         ["Sweep", "Closets", "Shrubs"],
     ]:
         print("{:>20}{:>20}{:>20}".format(*display2))
-
     for display3 in ["Mop", "Laundry", "Leaves"], [
         cash("\t\t$100"),
         cash("\t  $200"),
@@ -139,28 +106,26 @@ def user_interface():
     ]:
         print("{:>20}{:>20}{:>20}".format(*display3))
     print("")
-
     d = "Age 65+ 15% Discount"
     d_banner = d.center(70)
     print(d_banner)
     banner()
     banner()
-    package = "Cleaning packages..."
-    package_banner = package.center(53)
-
-    print(f"\t{package_banner}\n ")
+    package = "Cleaning packages...".center(_txt_)
+    package_banner = package.center(_txt_)
+    print(f"{package_banner}".center(_txt_))
     print(
-        "\n1.Regular Package ---> $100.00",
+        "\n1.Regular Package ---> $100.00".center(_txt_),
         "\n",
         total_services["Regular"],
     )
     print(
-        "\n2.Premium Package ---> $200.00",
+        "\n2.Premium Package ---> $200.00".center(_txt_),
         "\n",
         total_services["Premium"],
     )
     print(
-        "\n3.Outdoor Package ---> $300.00",
+        "\n3.Outdoor Package ---> $300.00".center(_txt_),
         "\n",
         total_services["Outdoor"],
     )
@@ -175,22 +140,19 @@ def cust_selection():
     service_selection = int(
         input(
             """
-    Press ---[1]---> Regular\n 
-    Press ---[2]---> Premium\n
-    Press ---[3]---> Outdoor\n
+    Press ---[1]---> Regular
+    Press ---[2]---> Premium
+    Press ---[3]---> Outdoor
     """
-        )
+        ).center(shutil.get_terminal_size().columns)
+        # can't center int
     )
-
     if service_selection == 1:
         return service_selection
-
     if service_selection == 2:
         return service_selection
-
     if service_selection == 3:
         return service_selection
-
     else:
         if service_selection != 1 or service_selection != 2 or service_selection != 3:
             print("Error")
@@ -204,7 +166,8 @@ def customer_transaction(selection, discount):
     LIST_PRICE = [100.00, 200.00, 300.00]
     totals = []
     cash = text_colors("green")
-
+    l = ""
+    w = ""
     if selection == int(1):
         print(f"Customer selects:\n{total_services['Regular']}", cash("$100.00"), "\n")
         sleep(0.5)
@@ -212,12 +175,11 @@ def customer_transaction(selection, discount):
         l = float(input("Length: \t"))
         w = float(input("Width: \t"))
         area = l * w
-        labor = labor_charge(area)
+        labor = (lambda area: (area) * 0.15)(area)
         print("Area: \t", area)
         s = LIST_PRICE[0]
         r_total_before_discount = price_per_house(s, labor)
         totals.append(r_total_before_discount)
-
     elif selection == int(2):
         print(f"Customer selects:\n {total_services['Premium']}", cash("$200.00"), "\n")
         print("Measure Length and width of exterior for price")
@@ -229,14 +191,13 @@ def customer_transaction(selection, discount):
         s2 = LIST_PRICE[1]
         p_total_before_discount = price_per_house(s2, labor2)
         totals.append(p_total_before_discount)
-
     elif selection == int(3):
         print(f"Customer selects:\n {total_services['Outdoor']}", cash("$300.00"), "\n")
         print("Measure Length and width of exterior for price")
         l = int(input("Length: \t"))
         w = int(input("Width: \t"))
         outdoor_area = l * w
-        outdoor_labor = labor_charge(outdoor_area)
+        outdoor_labor = (lambda area: (area) * 0.15)(outdoor_area)
         print("Area: \t", outdoor_area)
         s3 = LIST_PRICE[2]
         o_total_before_discount = price_per_house(s3, outdoor_labor)
@@ -246,9 +207,9 @@ def customer_transaction(selection, discount):
 
 def price_per_house(selection, labor):
     """sets vars for sum of labor and selection from list_price"""
+
     LIST_PRICE = [100.00, 200.00, 300.00]
     cash = text_colors("green")
-
     if selection == LIST_PRICE[0]:
         total = selection + labor
         reg_before_discount = total
@@ -282,7 +243,7 @@ def get_discount(total):
 def labor_charge(area):
     """calculate labor"""
 
-    labor = area * 0.15
+    labor = area * (15 / 100)
     cash = text_colors("green")
     print(cash("labor: "), labor)
     return labor
@@ -295,47 +256,58 @@ def final_price(reg_price=0, discount=0):
     return final_discount_price
 
 
+def banner():
+    """ui"""
+
+    b = "="
+    print(b.center(shutil.get_terminal_size().columns))
+
+
+def text_colors(color):
+    """ui"""
+
+    colors = {"RESET": "\033[m", "RED": "\033[31m", "GREEN": "\033[32m"}
+
+    def text(text):
+        c = colors.get(color.upper(), "")
+        return f"{c}{text}{colors['RESET']}"
+
+    return text
+
+
 def display_customer_info(c_names, c_address, c_discounts, c_totals):
     """print daily info + cash flow"""
 
-    print("{:<15}{:>51}".format("*** Todays Customer Info...", "Store ID: 3214"))
-    print("\n")
+    def center_customer_info(txt):
+        """center text"""
+        twidth, _ = shutil.get_terminal_size()
+        pad_left = (twidth - len(txt)) // 2
+        print(" " * pad_left + txt)
 
-    print(
-        "{:<20}\t{:<20}\t{:<20}\t{:<10}".format(
-            "Name",
-            "Address",
-            "Discount",
-            "Total Cost",
-        )
+    print("\n\n\n\n\n")
+    header = "{:<15}{:>51}".format("*** Todays Customer Info...", "Store ID: 3214")
+    center_customer_info(header)
+    print("\n\n")
+    header_titles = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
+        "Customer Name", "Address", "Discount", "Total"
     )
-    print(
-        "{:<20}\t{:<20}\t{:<20}\t{:<10}".format(
-            "_______________",
-            "_______________",
-            "_____________",
-            "_____________",
-        )
-    )
+    center_customer_info(header_titles)
+    separators = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
+        "_______________", "___________", "__________", "__________"
+    ).center(_txt_)
+    center_customer_info(separators)
     i = 0
     len_cust = len(c_names)
     while i < len_cust:
-        print(
-            "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
-                c_names[i],
-                c_address[i],
-                str(c_discounts[i]),
-                round(c_totals[i], 2),
-            )
+        display_data = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
+            c_names[i], c_address[i], str(c_discounts[i]), round(c_totals[i], 2)
         )
-        print("")
-        i = i + 1
+        center_customer_info(display_data)
+        todays_ctotal = sum(c_totals)
+        t = "${:.2f}".format(todays_ctotal)
+        print("\n\n\n")
+        for display_data in ["Cash Earned:", "------------", t]:
+            center_customer_info(display_data)
+        print("\n\n")
+        i += 1
     i = 0
-    # todays_total = sum(subtotals for sublists in c_totals for subtotals in sublists)
-
-    print("\n")
-    tt = "{:.2f}".format(c_totals[-1])
-    print("{:<80}".format("Cash earned: "))
-    print("{:<80}".format("-------------"))
-    print("$", tt)
-    print("\n")

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# Cleaning Service recovery/ restore
 function backup_database(){
     
     # various techniques exists to backup/ recover - learning purposes only
