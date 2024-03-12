@@ -105,31 +105,35 @@ def employee_table(con, emp_table):
     """conditionsals added to avoid duplicates on program restarts"""
 
     new_e_table = False
-    con = sqlite3.connect(DB)
-    if con:
-        new_e_table = True
-        try:
-            cur = con.cursor()
-            cur.execute(emp_table)
-            # print("e table created")
-            con.close()
-        except Error as e:
-            print(f"error in employee_table: {e}")
+    if os.path.isfile(DB):
+        con = sqlite3.connect(DB)
+        if con:
+            new_e_table = True
+            try:
+                cur = con.cursor()
+                cur.execute(emp_table)
+                # print("e table created")
+                con.close()
+            except Error as e:
+                print(f"error in employee_table: {e}")
     return new_e_table, con
 
 
 def customer_table(con, cx_table):
     """create table - customers"""
 
-    con = sqlite3.connect(DB)
-    try:
-        cur = con.cursor()
-        cur.execute(cx_table)
-        # print("c table created")
+    if os.path.isfile(DB):
+        con = sqlite3.connect(DB)
+        try:
+            cur = con.cursor()
+            cur.execute(cx_table)
+            # print("c table created")
 
-    except Error as e:
-        print(f"Error in customer_table: {e}")
-    return con
+        except Error as e:
+            print(f"Error in customer_table: {e}")
+        return con
+    else:
+        pass
 
 
 def insert_cust_totals(name, addr, amount_paid=0, discount=0):
@@ -143,7 +147,10 @@ def insert_cust_totals(name, addr, amount_paid=0, discount=0):
         amount_paid,
         discount,
     )
-    query_exec(q, data)
+    if os.path.isfile(DB):
+        query_exec(q, data)
+    elif not os.path.isfile(DB):
+        pass
 
 
 def insert_employee(name, address, region, badge_id):
@@ -155,20 +162,25 @@ def insert_employee(name, address, region, badge_id):
     cur = con.cursor()
     cur.execute(q1)
     e_rows = cur.fetchone()[0]
-    try:
-        if e_rows == 0:
-            data = (name, address, region, badge_id)
-            query_exec(q, data)
-            con.commit()
-        else:
-            print("record exists")
-    except Error as e:
-        print(f"error in insert_employee: {e}")
-    con.close()
+    if os.path.isfile(DB):
+        try:
+            if e_rows == 0:
+                data = (name, address, region, badge_id)
+                query_exec(q, data)
+                con.commit()
+            else:
+                print("record exists")
+        except Error as e:
+            print(f"error in insert_employee: {e}")
+        con.close()
+
+    else:
+        pass
 
 
 def get_customer_name(name):
     """query data"""
+
     q = "select * from customers where name = ?:"
     data = (name,)
     cur = query_exec(q, data)
@@ -179,20 +191,19 @@ def provision_database():
     """return a db for conditionals"""
 
     db_create = input(f"Create sqlite3 {DB} [y/n]? \t ")
-    if db_create in ("y", "yes"):
-        path = "./business_data.db"
-        if os.path.isfile(path):
-            print(f"DB already exists in {path}")
-        if not os.path.isfile(path):
+    if db_create.lower() == ("y", "yes"):
+        if os.path.isfile(DB):
+            print(f"Database already exists in {DB}")
+        if not os.path.isfile(DB):
             try:
                 db = create_database()
                 cx_new_tbl = customer_table(db, cx_table)
                 emp_new_tbl = employee_table(db, emp_table)
+                print(f"Database and tables created in {DB}")
                 return db
             except Error as e:
                 print(f" {e}")
-            print(f"Databade and tables created in {path}")
-    elif db_create != ("y", "yes"):
+    else:
         print("DB not created")
         print("\n")
 
@@ -200,13 +211,14 @@ def provision_database():
 def backup_database():
     """backup database"""
 
-    backup = input(f"Backup {DB} [y/n]? \t ")
-    if backup in ["y", "yes", "Y", "YES"]:
-        data_backups = os.path.isfile("business_data.db")
-        if data_backups:
-            subprocess.run(["chmod", "u+x", "backup.sh"])
-            subprocess.run(["./backup.sh"])
-            exit()
+    if os.path.isfile(DB):
+        backup = input(f"Backup {DB} [y/n]? \t ")
+        if backup in ["y", "yes", "Y", "YES"]:
+            data_backups = os.path.isfile("business_data.db")
+            if data_backups:
+                subprocess.run(["chmod", "u+x", "backup.sh"])
+                subprocess.run(["./backup.sh"])
+                exit()
     else:
         print("Run ./backup.sh to create backup")
         exit()

@@ -9,11 +9,10 @@ from time import sleep
 
 from cleaners.fig import (
     _txt_,
+    center_cash_earned,
+    center_daily_info,
     centered_input,
     centered_text,
-    io_figlets,
-    io_figlets_title,
-    return_centered_input,
 )
 from db.db_functions import DB, e_table_exists, emp_table, insert_employee
 
@@ -43,11 +42,11 @@ def get_employees():
     for i in mod, name, date, address, region, badge_id:
         centered_text(i)
     print("")
-    db_path = "./business_data.db"
-    if os.path.isfile(db_path):
+    if os.path.isfile(DB):
         if e_table_exists(DB, emp_table):
+
             insert_employee(name, address, region, badge_id)
-    elif not os.path.isfile(db_path):
+    elif not os.path.isfile(DB):
         pass
     employee_list.append(employee)
     return employee_list
@@ -62,11 +61,12 @@ def new_customer():
     valid_name = False
     name = centered_input("Customer Name <Enter> to exit: ")
     fname = name.replace(" ", "")
+
     if fname.isalpha():
         name = name.title()
         valid_name = True
         age = centered_input("Enter age: ")
-        if age.isalpha() is True:
+        if age.isalpha() and age.isdigit() is True:
             print("Error, numbers only")
             age = input("Age: \t")
             age = age.replace(" ", "")
@@ -87,24 +87,34 @@ def new_customer():
 
 def user_interface():
     """ui"""
-    _txt_ = shutil.get_terminal_size().columns
+
+    def center_text(text, total_width=80):
+        text_width = len(text)
+        padding = (total_width - text_width) // 2
+        return " " * padding + text
+
     cash = text_colors("green")
+
     for display1 in [
+        # TODO find new technique for centering
         ["Regular:", "Premium:", "Outdoor:"],
         ["Room Clean", "Regular +", "Mow"],
     ]:
-        print("\n{:>20}{:>20}{:>20}".format(*display1))
+        print(center_text("{:>20}{:>20}{:>20}".format(*display1)))
+
     for display2 in [
         ["Dust", "Bathrooms", "Weed-Wack"],
         ["Sweep", "Closets", "Shrubs"],
     ]:
-        print("{:>20}{:>20}{:>20}".format(*display2))
+        print(center_text("{:>20}{:>20}{:>20}".format(*display2)))
+
     for display3 in ["Mop", "Laundry", "Leaves"], [
         cash("\t\t$100"),
         cash("\t  $200"),
         cash("\t\t$300"),
     ]:
-        print("{:>20}{:>20}{:>20}".format(*display3))
+        print(center_text("{:>20}{:>20}{:>20}".format(*display3)))
+
     print("")
     d = "Age 65+ 15% Discount"
     d_banner = d.center(70)
@@ -145,7 +155,7 @@ def cust_selection():
     Press ---[3]---> Outdoor
     """
         ).center(shutil.get_terminal_size().columns)
-        # can't center int
+        # TODO can't center int
     )
     if service_selection == 1:
         return service_selection
@@ -168,6 +178,7 @@ def customer_transaction(selection, discount):
     cash = text_colors("green")
     l = ""
     w = ""
+
     if selection == int(1):
         print(f"Customer selects:\n{total_services['Regular']}", cash("$100.00"), "\n")
         sleep(0.5)
@@ -206,10 +217,11 @@ def customer_transaction(selection, discount):
 
 
 def price_per_house(selection, labor):
-    """sets vars for sum of labor and selection from list_price"""
+    """sets vars to use in customer_transaction"""
 
     LIST_PRICE = [100.00, 200.00, 300.00]
     cash = text_colors("green")
+
     if selection == LIST_PRICE[0]:
         total = selection + labor
         reg_before_discount = total
@@ -276,38 +288,34 @@ def text_colors(color):
 
 
 def display_customer_info(c_names, c_address, c_discounts, c_totals):
-    """print daily info + cash flow"""
-
-    def center_customer_info(txt):
-        """center text"""
-        twidth, _ = shutil.get_terminal_size()
-        pad_left = (twidth - len(txt)) // 2
-        print(" " * pad_left + txt)
+    """print formatted daily info + cash total"""
 
     print("\n\n\n\n\n")
     header = "{:<15}{:>51}".format("*** Todays Customer Info...", "Store ID: 3214")
-    center_customer_info(header)
+    center_daily_info(header)
     print("\n\n")
     header_titles = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
         "Customer Name", "Address", "Discount", "Total"
     )
-    center_customer_info(header_titles)
+    center_daily_info(header_titles)
     separators = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
         "_______________", "___________", "__________", "__________"
     ).center(_txt_)
-    center_customer_info(separators)
+    center_daily_info(separators)
+
     i = 0
     len_cust = len(c_names)
     while i < len_cust:
         display_data = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
             c_names[i], c_address[i], str(c_discounts[i]), round(c_totals[i], 2)
         )
-        center_customer_info(display_data)
-        todays_ctotal = sum(c_totals)
-        t = "${:.2f}".format(todays_ctotal)
-        print("\n\n\n")
-        for display_data in ["Cash Earned:", "------------", t]:
-            center_customer_info(display_data)
-        print("\n\n")
+        center_daily_info(display_data)
         i += 1
     i = 0
+
+    todays_ctotal = sum(c_totals)
+    t = "${:.2f}".format(todays_ctotal)
+    print("\n\n\n")
+    for display_data in ["Cash Earned", "------------", t]:
+        center_cash_earned(display_data)
+    print("\n\n")

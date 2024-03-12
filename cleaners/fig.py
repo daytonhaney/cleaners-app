@@ -33,6 +33,22 @@ def centered_input(prompt):
     return user_input
 
 
+def center_daily_info(txt):
+    """center daily info"""
+
+    twidth, _ = shutil.get_terminal_size()
+    pad_left = (twidth - len(txt)) // 2
+    print(" " * pad_left + txt)
+
+
+def center_cash_earned(final_total: str):
+    """left center total cash earned"""
+
+    twidth, _ = shutil.get_terminal_size()
+    pad_left = (twidth - len(final_total)) // 2 + 36
+    print(" " * pad_left + final_total)
+
+
 def io_figlets(t):
     """prints welcome title"""
 

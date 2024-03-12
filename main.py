@@ -12,14 +12,7 @@ from cleaners.clean import (
     text_colors,
     user_interface,
 )
-from cleaners.fig import (
-    _txt_,
-    centered_input,
-    centered_text,
-    io_figlets,
-    io_figlets_title,
-    return_centered_input,
-)
+from cleaners.fig import io_figlets, io_figlets_title
 from db.db_functions import backup_database, insert_cust_totals, provision_database
 
 
