@@ -191,7 +191,7 @@ def provision_database():
     """return a db for conditionals"""
 
     db_create = input(f"Create sqlite3 {DB} [y/n]? \t ")
-    if db_create.lower() == ("y", "yes"):
+    if db_create in ["y", "yes", "Y", "YES"]:
         if os.path.isfile(DB):
             print(f"Database already exists in {DB}")
         if not os.path.isfile(DB):
@@ -204,6 +204,7 @@ def provision_database():
             except Error as e:
                 print(f" {e}")
     else:
+
         print("DB not created")
         print("\n")
 
