@@ -6,9 +6,8 @@ import sqlite3
 import subprocess
 from sqlite3 import Error
 
-from cleaners.clean import *
-from cleaners.fig import *
-
+#from cleaners.clean import *
+#from cleaners.fig import *
 DB = "./business_data.db"
 
 
@@ -30,7 +29,6 @@ emp_table = """create table if not exists employees (
 def does_db_exist(DB):
     """check if db exists"""
     if DB == os.path.isfile(DB):
-        print("")
         return True
 
 
@@ -48,6 +46,7 @@ def e_table_exists(db, table):
         table = False
         # print("f")
     con.commit()
+    
     return table
 
 
@@ -67,6 +66,7 @@ def c_table_exists(db, table):
         c_table = False
         # print("f")
     con.commit()
+    
     return c_table
 
 
@@ -115,7 +115,8 @@ def employee_table(con, emp_table):
                 # print("e table created")
                 con.close()
             except Error as e:
-                print(f"error in employee_table: {e}")
+                print(f"Error in employee_table: {e}")
+    
     return new_e_table, con
 
 
@@ -128,7 +129,6 @@ def customer_table(con, cx_table):
             cur = con.cursor()
             cur.execute(cx_table)
             # print("c table created")
-
         except Error as e:
             print(f"Error in customer_table: {e}")
         return con
@@ -171,7 +171,7 @@ def insert_employee(name, address, region, badge_id):
             else:
                 print("record exists")
         except Error as e:
-            print(f"error in insert_employee: {e}")
+            print(f"Error in insert_employee: {e}")
         con.close()
 
     else:
@@ -184,6 +184,7 @@ def get_customer_name(name):
     q = "select * from customers where name = ?:"
     data = (name,)
     cur = query_exec(q, data)
+    
     return cur.fetchall()
 
 
@@ -202,7 +203,7 @@ def provision_database():
                 print(f"Database and tables created in {DB}")
                 return db
             except Error as e:
-                print(f" {e}")
+                print(f"Error in provision_database {e}")
     else:
 
         print("DB not created")

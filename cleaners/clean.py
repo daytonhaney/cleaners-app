@@ -42,13 +42,15 @@ def get_employees():
     for i in mod, name, date, address, region, badge_id:
         centered_text(i)
     print("")
+    
     if os.path.isfile(DB):
         if e_table_exists(DB, emp_table):
-
             insert_employee(name, address, region, badge_id)
+    
     elif not os.path.isfile(DB):
         pass
     employee_list.append(employee)
+    
     return employee_list
 
 
@@ -66,22 +68,26 @@ def new_customer():
         name = name.title()
         valid_name = True
         age = centered_input("Enter age: ")
+        
         if age.isalpha() and age.isdigit() is True:
             print("Error, numbers only")
             age = input("Age: \t")
             age = age.replace(" ", "")
             age1 = re.findall(r"\b\d+\b", age)
             age = age1[0]
+        
         if int(64) < int(age) < int(999):
             discount = 1, True
             print("applying discounts...!".center(_txt_))
             sleep(0.5)
             cash = text_colors("green")
             print(cash("-15%".center(_txt_)), "discount applied!".center(_txt_))
+        
         else:
             discount = 0, False
         address = centered_input("Enter address: ")
         addr = address.capitalize()
+    
     return name, valid_name, discount, addr
 
 
@@ -159,8 +165,10 @@ def cust_selection():
     )
     if service_selection == 1:
         return service_selection
+    
     if service_selection == 2:
         return service_selection
+    
     if service_selection == 3:
         return service_selection
     else:
@@ -191,6 +199,7 @@ def customer_transaction(selection, discount):
         s = LIST_PRICE[0]
         r_total_before_discount = price_per_house(s, labor)
         totals.append(r_total_before_discount)
+    
     elif selection == int(2):
         print(f"Customer selects:\n {total_services['Premium']}", cash("$200.00"), "\n")
         print("Measure Length and width of exterior for price")
@@ -202,6 +211,7 @@ def customer_transaction(selection, discount):
         s2 = LIST_PRICE[1]
         p_total_before_discount = price_per_house(s2, labor2)
         totals.append(p_total_before_discount)
+    
     elif selection == int(3):
         print(f"Customer selects:\n {total_services['Outdoor']}", cash("$300.00"), "\n")
         print("Measure Length and width of exterior for price")
@@ -213,6 +223,7 @@ def customer_transaction(selection, discount):
         s3 = LIST_PRICE[2]
         o_total_before_discount = price_per_house(s3, outdoor_labor)
         totals.append(o_total_before_discount)
+    
     return totals
 
 
@@ -307,7 +318,7 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
     len_cust = len(c_names)
     while i < len_cust:
         display_data = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
-            c_names[i], c_address[i], str(c_discounts[i]), round(c_totals[i], 2)
+            c_names[i], c_address[i], str(c_discounts[i]), round(c_totals[i], 2) # use "%.2f" % to format
         )
         center_daily_info(display_data)
         i += 1
@@ -316,6 +327,6 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
     todays_ctotal = sum(c_totals)
     t = "${:.2f}".format(todays_ctotal)
     print("\n\n\n")
-    for display_data in ["Cash Earned", "------------", t]:
-        center_cash_earned(display_data)
+    for total_cash in ["Cash Earned", "------------", t]:
+        center_cash_earned(total_cash)
     print("\n\n")
