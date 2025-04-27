@@ -53,39 +53,44 @@ def get_employees():
     
     return employee_list
 
+import re
+from time import sleep
+
+import re
+from time import sleep
 
 def new_customer():
     """get customers"""
 
-    discount = int
+    discount = (0, False)
     addr = ""
-    age = ""
     valid_name = False
-    name = centered_input("Customer Name <Enter> to exit: ")
+
+    name = centered_input("Customer Name <Enter> to exit: ").strip()
     fname = name.replace(" ", "")
 
     if fname.isalpha():
         name = name.title()
         valid_name = True
-        age = centered_input("Enter age: ")
-        
-        if age.isalpha() and age.isdigit() is True:
-            print("Error, numbers only")
-            age = input("Age: \t")
-            age = age.replace(" ", "")
-            age1 = re.findall(r"\b\d+\b", age)
-            age = age1[0]
-        
-        if int(64) < int(age) < int(999):
-            discount = 1, True
+
+        while True:
+            age_input = centered_input("Enter age: ").strip()
+            if age_input.isdigit():
+                age = int(age_input)
+                break
+            else:
+                print("Error, numbers only".center(_txt_))
+                sleep(0.5)
+
+        if 64 < age < 999:
+            discount = (1, True)
             print("applying discounts...!".center(_txt_))
             sleep(0.5)
             cash = text_colors("green")
             print(cash("-15%".center(_txt_)), "discount applied!".center(_txt_))
-        
         else:
-            discount = 0, False
-        address = centered_input("Enter address: ")
+            discount = (0, False)
+        address = centered_input("Enter address: ").strip()
         addr = address.capitalize()
     
     return name, valid_name, discount, addr
@@ -215,8 +220,8 @@ def customer_transaction(selection, discount):
     elif selection == int(3):
         print(f"Customer selects:\n {total_services['Outdoor']}", cash("$300.00"), "\n")
         print("Measure Length and width of exterior for price")
-        l = int(input("Length: \t"))
-        w = int(input("Width: \t"))
+        l = float(input("Length: \t"))
+        w = float(input("Width: \t"))
         outdoor_area = l * w
         outdoor_labor = (lambda area: (area) * 0.15)(outdoor_area)
         print("Area: \t", outdoor_area)
@@ -310,7 +315,7 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
     )
     center_daily_info(header_titles)
     separators = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
-        "_______________", "___________", "__________", "__________"
+        "_______________", "___________", "_________", "__________"
     ).center(_txt_)
     center_daily_info(separators)
 
@@ -327,6 +332,6 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
     todays_ctotal = sum(c_totals)
     t = "${:.2f}".format(todays_ctotal)
     print("\n\n\n")
-    for total_cash in ["Cash Earned", "------------", t]:
+    for total_cash in ["Cash Earned", "____________", t]:
         center_cash_earned(total_cash)
     print("\n\n")
