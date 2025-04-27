@@ -14,7 +14,7 @@
 ![example2](https://github.com/daytonhaney/cleaners-app/assets/37848207/b4fc030b-9d6d-4c08-bc95-dac1a66f8d14)
 
 ```bash
-$ git clone git@github.com:daytonhaney/cleaners-app.git
+$ git clone https://github.com/daytonhaney/cleaners-app.git
 $ cd cleaners-app
 $ python3 main.py
 ```

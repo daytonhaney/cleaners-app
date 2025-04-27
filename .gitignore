@@ -1,6 +1,6 @@
 LICENSE
 *.cleaners-app.main.py
-*.cleaning.png
+.cleaning.png
 *__pychached__/
 *.pyc
 *.pyo
