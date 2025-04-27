@@ -53,11 +53,6 @@ def get_employees():
     
     return employee_list
 
-import re
-from time import sleep
-
-import re
-from time import sleep
 
 def new_customer():
     """get customers"""
@@ -92,8 +87,9 @@ def new_customer():
             discount = (0, False)
         address = centered_input("Enter address: ").strip()
         addr = address.capitalize()
-    
+
     return name, valid_name, discount, addr
+
 
 
 def user_interface():
@@ -315,7 +311,7 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
     )
     center_daily_info(header_titles)
     separators = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
-        "_______________", "___________", "_________", "__________"
+        "_______________", "___________", "__________", "__________"
     ).center(_txt_)
     center_daily_info(separators)
 
@@ -332,6 +328,6 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
     todays_ctotal = sum(c_totals)
     t = "${:.2f}".format(todays_ctotal)
     print("\n\n\n")
-    for total_cash in ["Cash Earned", "____________", t]:
+    for total_cash in ["Cash Earned", "__________", t]:
         center_cash_earned(total_cash)
     print("\n\n")
