@@ -17,3 +17,4 @@ pycfg.
 *qodana.yml
 *business_data.db
 *.editorconfig
+.env

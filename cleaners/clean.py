@@ -17,9 +17,9 @@ from cleaners.fig import (
 from db.db_functions import DB, e_table_exists, emp_table, insert_employee
 
 total_services = {
-    "Regular": "General-Tidying, Sweep, Dust, Mop",
-    "Premium": "Regular Service+, Bathrooms, Closets, Laundry",
-    "Outdoor": "Mowing, Weed-Wack, Shrubs, Leaves",
+    "Regular": "General-Tidying, Sweep, Dust, Mop, $100",
+    "Premium": "Regular Service+, Bathrooms, Closets, Laundry, $200",
+    "Outdoor": "Mowing, Weed-Wack, Shrubs, Leaves, $300",
 }
 
 
@@ -74,19 +74,20 @@ def new_customer():
                 age = int(age_input)
                 break
             else:
-                print("Error, numbers only".center(_txt_))
+                centered_text("Error, numbers only")
                 sleep(0.5)
 
         if 64 < age < 999:
             discount = (1, True)
-            print("applying discounts...!".center(_txt_))
+            centered_text("applying discounts...!")
             sleep(0.5)
             cash = text_colors("green")
-            print(cash("-15%".center(_txt_)), "discount applied!".center(_txt_))
+            centered_text(cash("-15% discount applied!"))
         else:
             discount = (0, False)
         address = centered_input("Enter address: ").strip()
         addr = address.capitalize()
+        print() # Add space for readability
 
     return name, valid_name, discount, addr
 
@@ -95,56 +96,62 @@ def new_customer():
 def user_interface():
     """ui"""
 
-    def center_text(text, total_width=80):
-        text_width = len(text)
-        padding = (total_width - text_width) // 2
-        return " " * padding + text
-
     cash = text_colors("green")
+    
+    # --- Table Configuration ---
+    col_width = 20
+    headers = ["Regular:", "Premium:", "Outdoor:"]
+    
+    # Extract details from the updated total_services dictionary
+    details = {k: [item.strip() for item in v.split(',')] for k, v in total_services.items()}
+    max_rows = max(len(v) for v in details.values())
 
-    for display1 in [
-        # TODO find new technique for centering
-        ["Regular:", "Premium:", "Outdoor:"],
-        ["Room Clean", "Regular +", "Mow"],
-    ]:
-        print(center_text("{:>20}{:>20}{:>20}".format(*display1)))
+    # --- Build and Print Table ---
+    # Print Headers
+    header_line = "".join(h.ljust(col_width) for h in headers)
+    centered_text(header_line)
 
-    for display2 in [
-        ["Dust", "Bathrooms", "Weed-Wack"],
-        ["Sweep", "Closets", "Shrubs"],
-    ]:
-        print(center_text("{:>20}{:>20}{:>20}".format(*display2)))
-
-    for display3 in ["Mop", "Laundry", "Leaves"], [
-        cash("\t\t$100"),
-        cash("\t  $200"),
-        cash("\t\t$300"),
-    ]:
-        print(center_text("{:>20}{:>20}{:>20}".format(*display3)))
-
-    print("")
-    d = "Age 65+ 15% Discount"
-    d_banner = d.center(70)
-    print(d_banner)
+    # Print Details and Prices
+    for i in range(max_rows):
+        row_list = []
+        for header in headers:
+            package_name = header.replace(':', '')
+            # Get the item, or an empty string if this package has fewer details
+            item = details[package_name][i] if i < len(details[package_name]) else ""
+            
+            # Check if the item is a price
+            if item.startswith('$'):
+                # Color the price and pad correctly
+                padding = ' ' * (col_width - len(item))
+                row_list.append(cash(item) + padding)
+            else:
+                # Just pad the detail text
+                row_list.append(item.ljust(col_width))
+        
+        centered_text("".join(row_list))
+    
+    print()
+    centered_text("Age 65+ 15% Discount")
     banner()
     banner()
-    package = "Cleaning packages...".center(_txt_)
-    package_banner = package.center(_txt_)
-    print(f"{package_banner}".center(_txt_))
+    centered_text("Cleaning packages...")
+    
+    # This part of the UI can now also be generated dynamically if desired,
+    # but is left as is to maintain the existing detailed view.
     print(
         "\n1.Regular Package ---> $100.00".center(_txt_),
         "\n",
-        total_services["Regular"],
+        total_services["Regular"].replace(", $100", ""),
     )
     print(
         "\n2.Premium Package ---> $200.00".center(_txt_),
         "\n",
-        total_services["Premium"],
+        total_services["Premium"].replace(", $200", ""),
     )
     print(
         "\n3.Outdoor Package ---> $300.00".center(_txt_),
         "\n",
-        total_services["Outdoor"],
+        total_services["Outdoor"].replace(", $300", ""),
     )
     print("")
     print("$.15 per square foot of house is charged for labor\n")
@@ -154,78 +161,77 @@ def user_interface():
 def cust_selection():
     """customer selections"""
 
-    service_selection = int(
-        input(
-            """
+    red = text_colors("red")
+    prompt = """
     Press ---[1]---> Regular
     Press ---[2]---> Premium
     Press ---[3]---> Outdoor
     """
-        ).center(shutil.get_terminal_size().columns)
-        # TODO can't center int
-    )
-    if service_selection == 1:
-        return service_selection
-    
-    if service_selection == 2:
-        return service_selection
-    
-    if service_selection == 3:
-        return service_selection
-    else:
-        if service_selection != 1 or service_selection != 2 or service_selection != 3:
-            print("Error")
-            print("Enter 1 2 or 3")
-            return cust_selection()
+    while True:
+        try:
+            service_selection = int(input(prompt))
+            if service_selection in [1, 2, 3]:
+                return service_selection
+            else:
+                print(red("\nError: Please enter 1, 2, or 3.\n"))
+        except ValueError:
+            print(red("\nError: Invalid input. Please enter a number.\n"))
+
 
 
 def customer_transaction(selection, discount):
     """sum of area and labor charge added to price from LIST_PRICE"""
 
     LIST_PRICE = [100.00, 200.00, 300.00]
+    package_names = list(total_services.keys())
     totals = []
     cash = text_colors("green")
     l = ""
     w = ""
 
     if selection == int(1):
-        print(f"Customer selects:\n{total_services['Regular']}", cash("$100.00"), "\n")
+        package_name = package_names[0]
+        print(f"Customer selects: {package_name}\n{total_services[package_name]}", cash("$100.00"), "\n")
         sleep(0.5)
         print("Measure Length and width of exterior for price")
-        l = float(input("Length: \t"))
-        w = float(input("Width: \t"))
+        l = float(input("Length: ".ljust(8)))
+        w = float(input("Width:  ".ljust(8)))
         area = l * w
         labor = (lambda area: (area) * 0.15)(area)
-        print("Area: \t", area)
+        print(f"Area:    {area:.2f}")
+        print() # Add space for readability
         s = LIST_PRICE[0]
         r_total_before_discount = price_per_house(s, labor)
         totals.append(r_total_before_discount)
     
     elif selection == int(2):
-        print(f"Customer selects:\n {total_services['Premium']}", cash("$200.00"), "\n")
+        package_name = package_names[1]
+        print(f"Customer selects: {package_name}\n{total_services[package_name]}", cash("$200.00"), "\n")
         print("Measure Length and width of exterior for price")
-        l = float(input("Length: \t"))
-        w = float(input("Width: \t"))
+        l = float(input("Length: ".ljust(8)))
+        w = float(input("Width:  ".ljust(8)))
         premium_area = l * w
         labor2 = (lambda area: (area) * 0.15)(premium_area)
-        print("Area: \t", premium_area)
+        print(f"Area:    {premium_area:.2f}")
         s2 = LIST_PRICE[1]
         p_total_before_discount = price_per_house(s2, labor2)
         totals.append(p_total_before_discount)
     
     elif selection == int(3):
-        print(f"Customer selects:\n {total_services['Outdoor']}", cash("$300.00"), "\n")
+        package_name = package_names[2]
+        print(f"Customer selects: {package_name}\n{total_services[package_name]}", cash("$300.00"), "\n")
         print("Measure Length and width of exterior for price")
-        l = float(input("Length: \t"))
-        w = float(input("Width: \t"))
+        l = float(input("Length: ".ljust(8)))
+        w = float(input("Width:  ".ljust(8)))
         outdoor_area = l * w
         outdoor_labor = (lambda area: (area) * 0.15)(outdoor_area)
-        print("Area: \t", outdoor_area)
+        print(f"Area:    {outdoor_area:.2f}")
         s3 = LIST_PRICE[2]
         o_total_before_discount = price_per_house(s3, outdoor_labor)
         totals.append(o_total_before_discount)
     
     return totals
+
 
 
 def price_per_house(selection, labor):
@@ -237,21 +243,21 @@ def price_per_house(selection, labor):
     if selection == LIST_PRICE[0]:
         total = selection + labor
         reg_before_discount = total
-        print("{:.2f}".format(float(reg_before_discount)))
+        print(f"Subtotal: {reg_before_discount:.2f}")
         cash(reg_before_discount)
         return reg_before_discount
 
     elif selection == LIST_PRICE[1]:
         total = selection + labor
         prem_before_discount = total
-        print("{:.2f}".format(float(prem_before_discount)))
+        print(f"Subtotal: {prem_before_discount:.2f}")
         cash(prem_before_discount)
         return prem_before_discount
 
     elif selection == LIST_PRICE[2]:
         total = selection + labor
         out_before_discount = total
-        print("{:.2f}".format(float(out_before_discount)))
+        print(f"Subtotal: {out_before_discount:.2f}")
         cash(out_before_discount)
         return out_before_discount
 
@@ -259,8 +265,9 @@ def price_per_house(selection, labor):
 def get_discount(total):
     """calculate discount"""
 
+    cash = text_colors("green")
     dis = total * (15 / 100)
-    print("getting discount...")
+    print(cash("getting discount..."))
     return dis
 
 
@@ -318,8 +325,8 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
     i = 0
     len_cust = len(c_names)
     while i < len_cust:
-        display_data = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
-            c_names[i], c_address[i], str(c_discounts[i]), round(c_totals[i], 2) # use "%.2f" % to format
+        display_data = "{:<20}\t{:<20}\t{:<20}\t${:<20.2f}".format(
+            c_names[i], c_address[i], str(c_discounts[i]), c_totals[i]
         )
         center_daily_info(display_data)
         i += 1

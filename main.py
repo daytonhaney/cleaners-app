@@ -50,8 +50,9 @@ def main():
                 final_total = totals[-1]
                 dis = get_discount(final_total)
                 f_discount = "{:.2f}".format(dis)
-                print("Dis:", cash(dis))
+                print(cash(f"Discount: ${dis:.2f}"))
                 dis_ft = final_price(final_total, dis)
+                print(cash(f"Final Total: ${dis_ft:.2f}"))
                 c_totals.append(dis_ft)
                 c_discounts.append(f_discount)
             
@@ -60,6 +61,8 @@ def main():
                 c_discounts.append(dis)
                 selection = cust_selection()
                 ft = customer_transaction(selection, discounts[-1])
+                final_total_no_discount = ft[-1]
+                print(cash(f"Final Total: ${final_total_no_discount:.2f}"))
                 c_totals.extend(ft)        
             db_insert = insert_cust_totals(c_names, c_address, c_discounts, c_totals)
     

@@ -181,7 +181,7 @@ def insert_employee(name, address, region, badge_id):
 def get_customer_name(name):
     """query data"""
 
-    q = "select * from customers where name = ?:"
+    q = "select * from customers where name = ?"
     data = (name,)
     cur = query_exec(q, data)
     
