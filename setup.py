@@ -9,4 +9,7 @@ setup(
     author="user",
     author_email="jpp@iocleaning.com",
     description="Cleaning Service console app",
+    install_requires=[
+        "rich>=13.0.0",
+    ],
 )

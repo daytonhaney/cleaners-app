@@ -14,6 +14,32 @@ from cleaners.fig import (
     centered_input,
     centered_text,
 )
+
+# Import Rich UI components
+try:
+    from .rich_ui import (
+        rich_title,
+        rich_employee_info,
+        rich_package_selection,
+        rich_customer_input,
+        rich_int_input,
+        rich_area_input,
+        rich_transaction_summary,
+        rich_discount_applied,
+        rich_final_total,
+        rich_customer_daily_summary,
+        rich_loading,
+        rich_error,
+        rich_success,
+        rich_info,
+        rich_warning,
+        rich_separator,
+        rich_newlines,
+    )
+    RICH_AVAILABLE = True
+except ImportError:
+    RICH_AVAILABLE = False
+
 from db.db_functions import DB, e_table_exists, emp_table, insert_employee
 
 total_services = {
@@ -39,9 +65,14 @@ def get_employees():
         region,
         badge_id,
     )
-    for i in mod, name, date, address, region, badge_id:
-        centered_text(i)
-    print("")
+    
+    # Use Rich UI if available, fallback to old UI
+    if RICH_AVAILABLE:
+        rich_employee_info([employee])
+    else:
+        for i in mod, name, date, address, region, badge_id:
+            centered_text(i)
+        print("")
     
     if os.path.isfile(DB):
         if e_table_exists(DB, emp_table):
@@ -61,7 +92,11 @@ def new_customer():
     addr = ""
     valid_name = False
 
-    name = centered_input("Customer Name <Enter> to exit: ").strip()
+    if RICH_AVAILABLE:
+        name = rich_customer_input("Customer Name <Enter> to exit: ").strip()
+    else:
+        name = centered_input("Customer Name <Enter> to exit: ").strip()
+    
     fname = name.replace(" ", "")
 
     if fname.isalpha():
@@ -69,23 +104,40 @@ def new_customer():
         valid_name = True
 
         while True:
-            age_input = centered_input("Enter age: ").strip()
-            if age_input.isdigit():
-                age = int(age_input)
+            if RICH_AVAILABLE:
+                age_input = rich_int_input("Enter age")
+                if age_input is None:
+                    rich_error("Please enter a valid number")
+                    continue
+                age = age_input
                 break
             else:
-                centered_text("Error, numbers only")
-                sleep(0.5)
+                age_input = centered_input("Enter age: ").strip()
+                if age_input.isdigit():
+                    age = int(age_input)
+                    break
+                else:
+                    centered_text("Error, numbers only")
+                    sleep(0.5)
 
         if 64 < age < 999:
             discount = (1, True)
-            centered_text("applying discounts...!")
-            sleep(0.5)
-            cash = text_colors("green")
-            centered_text(cash("-15% discount applied!"))
+            if RICH_AVAILABLE:
+                rich_success("applying discounts...!")
+                rich_success("-15% discount applied!")
+            else:
+                centered_text("applying discounts...!")
+                sleep(0.5)
+                cash = text_colors("green")
+                centered_text(cash("-15% discount applied!"))
         else:
             discount = (0, False)
-        address = centered_input("Enter address: ").strip()
+        
+        if RICH_AVAILABLE:
+            address = rich_customer_input("Enter address: ").strip()
+        else:
+            address = centered_input("Enter address: ").strip()
+        
         addr = address.capitalize()
         print() # Add space for readability
 
@@ -98,64 +150,67 @@ def user_interface():
 
     cash = text_colors("green")
     
-    # --- Table Configuration ---
-    col_width = 20
-    headers = ["Regular:", "Premium:", "Outdoor:"]
-    
-    # Extract details from the updated total_services dictionary
-    details = {k: [item.strip() for item in v.split(',')] for k, v in total_services.items()}
-    max_rows = max(len(v) for v in details.values())
-
-    # --- Build and Print Table ---
-    # Print Headers
-    header_line = "".join(h.ljust(col_width) for h in headers)
-    centered_text(header_line)
-
-    # Print Details and Prices
-    for i in range(max_rows):
-        row_list = []
-        for header in headers:
-            package_name = header.replace(':', '')
-            # Get the item, or an empty string if this package has fewer details
-            item = details[package_name][i] if i < len(details[package_name]) else ""
-            
-            # Check if the item is a price
-            if item.startswith('$'):
-                # Color the price and pad correctly
-                padding = ' ' * (col_width - len(item))
-                row_list.append(cash(item) + padding)
-            else:
-                # Just pad the detail text
-                row_list.append(item.ljust(col_width))
+    if RICH_AVAILABLE:
+        rich_package_selection()
+    else:
+        # Original UI code
+        col_width = 20
+        headers = ["Regular:", "Premium:", "Outdoor:"]
         
-        centered_text("".join(row_list))
-    
-    print()
-    centered_text("Age 65+ 15% Discount")
-    banner()
-    banner()
-    centered_text("Cleaning packages...")
-    
-    # This part of the UI can now also be generated dynamically if desired,
-    # but is left as is to maintain the existing detailed view.
-    print(
-        "\n1.Regular Package ---> $100.00".center(_txt_),
-        "\n",
-        total_services["Regular"].replace(", $100", ""),
-    )
-    print(
-        "\n2.Premium Package ---> $200.00".center(_txt_),
-        "\n",
-        total_services["Premium"].replace(", $200", ""),
-    )
-    print(
-        "\n3.Outdoor Package ---> $300.00".center(_txt_),
-        "\n",
-        total_services["Outdoor"].replace(", $300", ""),
-    )
-    print("")
-    print("$.15 per square foot of house is charged for labor\n")
-    print("Chose cleaning package...")
+        # Extract details from the updated total_services dictionary
+        details = {k: [item.strip() for item in v.split(',')] for k, v in total_services.items()}
+        max_rows = max(len(v) for v in details.values())
+
+        # --- Build and Print Table ---
+        # Print Headers
+        header_line = "".join(h.ljust(col_width) for h in headers)
+        centered_text(header_line)
+
+        # Print Details and Prices
+        for i in range(max_rows):
+            row_list = []
+            for header in headers:
+                package_name = header.replace(':', '')
+                # Get the item, or an empty string if this package has fewer details
+                item = details[package_name][i] if i < len(details[package_name]) else ""
+                
+                # Check if the item is a price
+                if item.startswith('$'):
+                    # Color the price and pad correctly
+                    padding = ' ' * (col_width - len(item))
+                    row_list.append(cash(item) + padding)
+                else:
+                    # Just pad the detail text
+                    row_list.append(item.ljust(col_width))
+            
+            centered_text("".join(row_list))
+        
+        print()
+        centered_text("Age 65+ 15% Discount")
+        banner()
+        banner()
+        centered_text("Cleaning packages...")
+        
+        # This part of the UI can now also be generated dynamically if desired,
+        # but is left as is to maintain the existing detailed view.
+        print(
+            "\n1.Regular Package ---> $100.00".center(_txt_),
+            "\n",
+            total_services["Regular"].replace(", $100", ""),
+        )
+        print(
+            "\n2.Premium Package ---> $200.00".center(_txt_),
+            "\n",
+            total_services["Premium"].replace(", $200", ""),
+        )
+        print(
+            "\n3.Outdoor Package ---> $300.00".center(_txt_),
+            "\n",
+            total_services["Outdoor"].replace(", $300", ""),
+        )
+        print("")
+        print("$.15 per square foot of house is charged for labor\n")
+        print("Chose cleaning package...")
 
 
 def cust_selection():
@@ -169,13 +224,23 @@ def cust_selection():
     """
     while True:
         try:
-            service_selection = int(input(prompt))
-            if service_selection in [1, 2, 3]:
-                return service_selection
+            if RICH_AVAILABLE:
+                choice = rich_int_input("Select package [1-3]")
+                if choice in [1, 2, 3]:
+                    return choice
+                else:
+                    rich_error("Please enter 1, 2, or 3")
             else:
-                print(red("\nError: Please enter 1, 2, or 3.\n"))
+                service_selection = int(input(prompt))
+                if service_selection in [1, 2, 3]:
+                    return service_selection
+                else:
+                    print(red("\nError: Please enter 1, 2, or 3.\n"))
         except ValueError:
-            print(red("\nError: Invalid input. Please enter a number.\n"))
+            if RICH_AVAILABLE:
+                rich_error("Invalid input. Please enter a number.")
+            else:
+                print(red("\nError: Invalid input. Please enter a number.\n"))
 
 
 
@@ -191,44 +256,84 @@ def customer_transaction(selection, discount):
 
     if selection == int(1):
         package_name = package_names[0]
-        print(f"Customer selects: {package_name}\n{total_services[package_name]}", cash("$100.00"), "\n")
-        sleep(0.5)
-        print("Measure Length and width of exterior for price")
-        l = float(input("Length: ".ljust(8)))
-        w = float(input("Width:  ".ljust(8)))
-        area = l * w
-        labor = (lambda area: (area) * 0.15)(area)
-        print(f"Area:    {area:.2f}")
-        print() # Add space for readability
+        if RICH_AVAILABLE:
+            rich_info(f"Customer selects: {package_name}")
+            rich_info(total_services[package_name].replace(", $100", ""))
+        else:
+            print(f"Customer selects: {package_name}\n{total_services[package_name]}", cash("$100.00"), "\n")
+            sleep(0.5)
+        
+        if RICH_AVAILABLE:
+            l, w, area = rich_area_input()
+        else:
+            print("Measure Length and width of exterior for price")
+            l = float(input("Length: ".ljust(8)))
+            w = float(input("Width:  ".ljust(8)))
+            area = l * w
+            print(f"Area:    {area:.2f}")
+            print() # Add space for readability
+        
         s = LIST_PRICE[0]
+        labor = (lambda area: (area) * 0.15)(area)
         r_total_before_discount = price_per_house(s, labor)
         totals.append(r_total_before_discount)
+        
+        if RICH_AVAILABLE:
+            rich_transaction_summary(package_name, s, area, labor, r_total_before_discount)
     
     elif selection == int(2):
         package_name = package_names[1]
-        print(f"Customer selects: {package_name}\n{total_services[package_name]}", cash("$200.00"), "\n")
-        print("Measure Length and width of exterior for price")
-        l = float(input("Length: ".ljust(8)))
-        w = float(input("Width:  ".ljust(8)))
-        premium_area = l * w
+        if RICH_AVAILABLE:
+            rich_info(f"Customer selects: {package_name}")
+            rich_info(total_services[package_name].replace(", $200", ""))
+        else:
+            print(f"Customer selects: {package_name}\n{total_services[package_name]}", cash("$200.00"), "\n")
+        
+        if RICH_AVAILABLE:
+            l, w, premium_area = rich_area_input()
+        else:
+            print("Measure Length and width of exterior for price")
+            l = float(input("Length: ".ljust(8)))
+            w = float(input("Width:  ".ljust(8)))
+            premium_area = l * w
+        
         labor2 = (lambda area: (area) * 0.15)(premium_area)
-        print(f"Area:    {premium_area:.2f}")
+        if not RICH_AVAILABLE:
+            print(f"Area:    {premium_area:.2f}")
+        
         s2 = LIST_PRICE[1]
         p_total_before_discount = price_per_house(s2, labor2)
         totals.append(p_total_before_discount)
+        
+        if RICH_AVAILABLE:
+            rich_transaction_summary(package_name, s2, premium_area, labor2, p_total_before_discount)
     
     elif selection == int(3):
         package_name = package_names[2]
-        print(f"Customer selects: {package_name}\n{total_services[package_name]}", cash("$300.00"), "\n")
-        print("Measure Length and width of exterior for price")
-        l = float(input("Length: ".ljust(8)))
-        w = float(input("Width:  ".ljust(8)))
-        outdoor_area = l * w
+        if RICH_AVAILABLE:
+            rich_info(f"Customer selects: {package_name}")
+            rich_info(total_services[package_name].replace(", $300", ""))
+        else:
+            print(f"Customer selects: {package_name}\n{total_services[package_name]}", cash("$300.00"), "\n")
+        
+        if RICH_AVAILABLE:
+            l, w, outdoor_area = rich_area_input()
+        else:
+            print("Measure Length and width of exterior for price")
+            l = float(input("Length: ".ljust(8)))
+            w = float(input("Width:  ".ljust(8)))
+            outdoor_area = l * w
+        
         outdoor_labor = (lambda area: (area) * 0.15)(outdoor_area)
-        print(f"Area:    {outdoor_area:.2f}")
+        if not RICH_AVAILABLE:
+            print(f"Area:    {outdoor_area:.2f}")
+        
         s3 = LIST_PRICE[2]
         o_total_before_discount = price_per_house(s3, outdoor_labor)
         totals.append(o_total_before_discount)
+        
+        if RICH_AVAILABLE:
+            rich_transaction_summary(package_name, s3, outdoor_area, outdoor_labor, o_total_before_discount)
     
     return totals
 
@@ -243,22 +348,25 @@ def price_per_house(selection, labor):
     if selection == LIST_PRICE[0]:
         total = selection + labor
         reg_before_discount = total
-        print(f"Subtotal: {reg_before_discount:.2f}")
-        cash(reg_before_discount)
+        if not RICH_AVAILABLE:
+            print(f"Subtotal: {reg_before_discount:.2f}")
+            cash(reg_before_discount)
         return reg_before_discount
 
     elif selection == LIST_PRICE[1]:
         total = selection + labor
         prem_before_discount = total
-        print(f"Subtotal: {prem_before_discount:.2f}")
-        cash(prem_before_discount)
+        if not RICH_AVAILABLE:
+            print(f"Subtotal: {prem_before_discount:.2f}")
+            cash(prem_before_discount)
         return prem_before_discount
 
     elif selection == LIST_PRICE[2]:
         total = selection + labor
         out_before_discount = total
-        print(f"Subtotal: {out_before_discount:.2f}")
-        cash(out_before_discount)
+        if not RICH_AVAILABLE:
+            print(f"Subtotal: {out_before_discount:.2f}")
+            cash(out_before_discount)
         return out_before_discount
 
 
@@ -267,7 +375,8 @@ def get_discount(total):
 
     cash = text_colors("green")
     dis = total * (15 / 100)
-    print(cash("getting discount..."))
+    if not RICH_AVAILABLE:
+        print(cash("getting discount..."))
     return dis
 
 
@@ -276,7 +385,8 @@ def labor_charge(area):
 
     labor = area * (15 / 100)
     cash = text_colors("green")
-    print(cash("labor: "), labor)
+    if not RICH_AVAILABLE:
+        print(cash("labor: "), labor)
     return labor
 
 
@@ -309,32 +419,37 @@ def text_colors(color):
 def display_customer_info(c_names, c_address, c_discounts, c_totals):
     """print formatted daily info + cash total"""
 
-    print("\n\n\n\n\n")
-    header = "{:<15}{:>51}".format("*** Todays Customer Info...", "Store ID: 3214")
-    center_daily_info(header)
-    print("\n\n")
-    header_titles = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
-        "Customer Name", "Address", "Discount", "Total"
-    )
-    center_daily_info(header_titles)
-    separators = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
-        "_______________", "___________", "__________", "__________"
-    ).center(_txt_)
-    center_daily_info(separators)
-
-    i = 0
-    len_cust = len(c_names)
-    while i < len_cust:
-        display_data = "{:<20}\t{:<20}\t{:<20}\t${:<20.2f}".format(
-            c_names[i], c_address[i], str(c_discounts[i]), c_totals[i]
+    if RICH_AVAILABLE:
+        customers_data = list(zip(c_names, c_address, c_discounts, c_totals))
+        rich_customer_daily_summary(customers_data)
+    else:
+        # Original display code
+        print("\n\n\n\n\n")
+        header = "{:<15}{:>51}".format("*** Todays Customer Info...", "Store ID: 3214")
+        center_daily_info(header)
+        print("\n\n")
+        header_titles = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
+            "Customer Name", "Address", "Discount", "Total"
         )
-        center_daily_info(display_data)
-        i += 1
-    i = 0
+        center_daily_info(header_titles)
+        separators = "{:<20}\t{:<20}\t{:<20}\t{:<20}".format(
+            "_______________", "___________", "__________", "__________"
+        ).center(_txt_)
+        center_daily_info(separators)
 
-    todays_ctotal = sum(c_totals)
-    t = "${:.2f}".format(todays_ctotal)
-    print("\n\n\n")
-    for total_cash in ["Cash Earned", "__________", t]:
-        center_cash_earned(total_cash)
-    print("\n\n")
+        i = 0
+        len_cust = len(c_names)
+        while i < len_cust:
+            display_data = "{:<20}\t{:<20}\t{:<20}\t${:<20.2f}".format(
+                c_names[i], c_address[i], str(c_discounts[i]), c_totals[i]
+            )
+            center_daily_info(display_data)
+            i += 1
+        i = 0
+
+        todays_ctotal = sum(c_totals)
+        t = "${:.2f}".format(todays_ctotal)
+        print("\n\n\n")
+        for total_cash in ["Cash Earned", "__________", t]:
+            center_cash_earned(total_cash)
+        print("\n\n")

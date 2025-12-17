@@ -136,19 +136,29 @@ def customer_table(con, cx_table):
         pass
 
 
-def insert_cust_totals(name, addr, amount_paid=0, discount=0):
+def insert_cust_totals(names, addresses, discounts, totals):
     """insert customer name and address,
     set defaults to 0 for amount_paid and discount until payment is made"""
 
     q = """insert into customers (name,address,amount_paid,discount) values (?,?,?,?)"""
-    data = (
-        name,
-        addr,
-        amount_paid,
-        discount,
-    )
+    
+    # Handle case where single values are passed
+    if isinstance(names, str):
+        names = [names]
+        addresses = [addresses] if addresses else [""]
+        discounts = [discounts] if discounts else [0]
+        totals = [totals] if totals else [0]
+    
     if os.path.isfile(DB):
-        query_exec(q, data)
+        # Insert each customer
+        for i in range(len(names)):
+            data = (
+                names[i],
+                addresses[i] if i < len(addresses) else "",
+                totals[i] if i < len(totals) else 0,
+                discounts[i] if i < len(discounts) else 0,
+            )
+            query_exec(q, data)
     elif not os.path.isfile(DB):
         pass
 
@@ -185,7 +195,9 @@ def get_customer_name(name):
     data = (name,)
     cur = query_exec(q, data)
     
-    return cur.fetchall()
+    if cur:
+        return cur.fetchall()
+    return []
 
 
 def provision_database():
