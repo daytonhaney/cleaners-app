@@ -20,7 +20,7 @@ A Python console application for managing cleaning service transactions, custome
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
+git clone https://www.github.com/daytonhaney/cleaners-app.git
 cd cleaners-app
 ```
 
