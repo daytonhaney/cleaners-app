@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Input validation utilities for CleanersApp"""
 
-import re
+import re, os
 from cleaners.config import get_config
 
 

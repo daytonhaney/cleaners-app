@@ -1,0 +1,30 @@
+{
+    "database": {
+        "path": "./business_data.db",
+        "backup_enabled": true,
+        "backup_interval_days": 7,
+        "backup_location": "./backups/"
+    },
+    "business": {
+        "name": "CleanersApp Service",
+        "phone": "",
+        "email": "",
+        "address": "",
+        "tax_rate": 0.08,
+        "senior_discount": 0.15,
+        "senior_age": 65
+    },
+    "ui": {
+        "theme": "default",
+        "show_animations": true,
+        "auto_save": true,
+        "receipt_enabled": true
+    },
+    "validation": {
+        "max_square_footage": 10000,
+        "min_square_footage": 100,
+        "max_customer_name_length": 50,
+        "min_customer_name_length": 2,
+        "max_address_length": 100
+    }
+}
