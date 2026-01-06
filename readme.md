@@ -1,5 +1,6 @@
 # CleanersApp - Cleaning Service Management
 
+
 A comprehensive application for managing cleaning service transactions, customer information, and employee data with an interactive Rich-based UI.
 
 ## Features
@@ -14,7 +15,7 @@ A comprehensive application for managing cleaning service transactions, customer
 
 ## Installation Options
 
-### 🚀 Option 1: Quick Start (Recommended for End Users)
+### Option 1: Quick Start (Recommended for End Users)
 
 **Download the Executable - No Installation Required!**
 
