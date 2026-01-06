@@ -33,6 +33,8 @@ business_data.db
 venv/
 ENV/
 env/
+ai/
+
 
 # IDE
 .vscode/
