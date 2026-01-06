@@ -9,6 +9,7 @@ __pycache__/
 dist/
 build/
 *.egg
+DEVELOPMENT_REVIEW.MD
 
 # Database
 business_data.db
