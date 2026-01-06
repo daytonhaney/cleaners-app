@@ -170,8 +170,8 @@ cleaners-app/
 
 - **Email**: jpp@iocleaning.com
 - **Issues**: [GitHub Issues](https://github.com/daytonhaney/cleaners-app/issues)
-- **Documentation**: [ROBUSTNESS_ROADMAP.md](ROBUSTNESS_ROADMAP.md)
-
 ## License
 
 BSD Zero Clause License - Free for commercial and personal use.
+
+![ex](https://github.com/user-attachments/assets/a69f6def-5cc1-4ba4-84c4-80634d7e8ab5)
