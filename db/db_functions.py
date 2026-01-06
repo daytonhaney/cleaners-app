@@ -236,10 +236,22 @@ def provision_database():
 
 
 def backup_database():
-    """backup script"""
+    """backup database - self-contained implementation"""
 
     if os.path.isfile("business_data.db"):
-        subprocess.run(["chmod", "u+x", "backup.sh"], check=False)
-        subprocess.run(["./backup.sh"], check=False)
+        import shutil
+        from datetime import datetime
+
+        timestamp = datetime.now().strftime("%Y-%m-%d")
+        backup_name = f"business_data_backup-{timestamp}.db"
+
+        try:
+            shutil.copy2("business_data.db", backup_name)
+            print(f"Backup successful: {backup_name}")
+            return True
+        except Exception as e:
+            print(f"Backup failed: {e}")
+            return False
     else:
-        print("Run ./backup.sh to create backup")
+        print("No database file found to backup")
+        return False
