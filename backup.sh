@@ -95,7 +95,7 @@ function recover_database(){
     # Confirmation "popup"
     echo ""
     echo "=================================================================="
-    echo "                       CONFIRM RESTORE                     "
+    echo "                       CONFIRM RESTORE                            "
     echo "=================================================================="
     echo ""
     echo "You are about to restore from backup dated: $SELECTED_BACKUP"
@@ -109,7 +109,7 @@ function recover_database(){
         gunzip -c "$BACKUP_FILE" > business_data.db
         echo ""
         echo "=================================================================="
-        echo "                      RESTORE COMPLETE                        "
+        echo "                      RESTORE COMPLETE                            "
         echo "=================================================================="
         echo "Database successfully restored from backup dated $SELECTED_BACKUP"
         echo "Current database size: $(ls -lh business_data.db | awk '{print $5}')"
