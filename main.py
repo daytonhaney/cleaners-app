@@ -18,6 +18,7 @@ from db.db_functions import backup_database, insert_cust_totals, provision_datab
 # Import Rich UI for main title
 try:
     from cleaners.rich_ui import rich_title, rich_newlines
+
     RICH_AVAILABLE = True
 except ImportError:
     RICH_AVAILABLE = False
@@ -29,7 +30,7 @@ def main():
     customers = True
     cust_names = None
     cust_addrs = None
-    
+
     c_names = []
     c_address = []
     c_discounts = []
@@ -38,42 +39,44 @@ def main():
 
     cash = text_colors("green")
     check_db = provision_database()
-    
+
     # Display title using Rich if available, otherwise fallback
     if RICH_AVAILABLE:
         rich_title()
         rich_newlines(1)
     else:
         title = io_figlets(io_figlets_title)
-    
+
     while customers:
         employee_list = get_employees()
         cust_names, valid_name, discount, cust_addrs = new_customer()
         customers = valid_name
-        
+
         if valid_name:
             c_names.append(cust_names)
             c_address.append(cust_addrs)
             discounts.append(discount)
             tui = user_interface()
-            
+
             # Import Rich loading for progress indicators
             try:
                 from cleaners.rich_ui import rich_loading
+
                 rich_loading("Processing transaction...")
             except ImportError:
                 pass
-            
+
             if discount == (1, True):
                 selection = cust_selection()
                 totals = customer_transaction(selection, discounts[-1])
                 final_total = totals[-1]
                 dis = get_discount(final_total)
                 f_discount = "{:.2f}".format(dis)
-                
+
                 # Use Rich for discount display if available
                 try:
                     from cleaners.rich_ui import rich_discount_applied, rich_final_total
+
                     rich_discount_applied(dis)
                     dis_ft = final_price(final_total, dis)
                     rich_final_total(dis_ft)
@@ -81,10 +84,10 @@ def main():
                     print(cash(f"Discount: ${dis:.2f}"))
                     dis_ft = final_price(final_total, dis)
                     print(cash(f"Final Total: ${dis_ft:.2f}"))
-                
+
                 c_totals.append(dis_ft)
                 c_discounts.append(f_discount)
-            
+
             else:
                 dis = 0
                 c_discounts.append(dis)
@@ -92,11 +95,11 @@ def main():
                 ft = customer_transaction(selection, discounts[-1])
                 final_total_no_discount = ft[-1]
                 print(cash(f"Final Total: ${final_total_no_discount:.2f}"))
-                c_totals.extend(ft)        
+                c_totals.extend(ft)
             db_insert = insert_cust_totals(c_names, c_address, c_discounts, c_totals)
-    
+
     daily_totals = display_customer_info(c_names, c_address, c_discounts, c_totals)
-    check_db_backup = backup_database()
+    backup_database()
 
 
 main()

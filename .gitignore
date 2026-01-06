@@ -13,8 +13,13 @@ DEVELOPMENT_REVIEW.MD
 
 # Database
 business_data.db
+business_data_backup-*.db
+business_data_backup-*.db.gz
 *.db
 *.sqlite
+
+# Backup directory
+~/database-backups/
 
 # Build artifacts
 *.spec
@@ -34,8 +39,12 @@ venv/
 ENV/
 env/
 internal/
-*.md
 ai/
+
+# Keep important markdown files
+!readme.md
+!CONFIG_GUIDE.md
+!LICENSE
 
 
 # IDE

@@ -2,7 +2,6 @@
 """Input validation utilities for CleanersApp"""
 
 import re, os
-from cleaners.config import get_config
 
 
 def validate_customer_name(name):
@@ -11,8 +10,8 @@ def validate_customer_name(name):
         return False, "Customer name cannot be empty"
 
     name = name.strip()
-    min_length = get_config("validation.min_customer_name_length", 2)
-    max_length = get_config("validation.max_customer_name_length", 50)
+    min_length = 2
+    max_length = 50
 
     if len(name) < min_length:
         return False, f"Name must be at least {min_length} characters"
@@ -33,7 +32,7 @@ def validate_address(address):
         return False, "Address cannot be empty"
 
     address = address.strip()
-    max_length = get_config("validation.max_address_length", 100)
+    max_length = 100
 
     if len(address) > max_length:
         return False, f"Address cannot exceed {max_length} characters"
@@ -55,8 +54,8 @@ def validate_age(age):
 def validate_square_footage(area):
     """Validate square footage input"""
     try:
-        min_sqft = get_config("validation.min_square_footage", 100)
-        max_sqft = get_config("validation.max_square_footage", 10000)
+        min_sqft = 100
+        max_sqft = 10000
 
         area_float = float(area)
         if area_float < min_sqft:
@@ -136,8 +135,8 @@ def validate_phone(phone):
 def get_validation_summary():
     """Get validation limits for display"""
     return {
-        "name": f"{get_config('validation.min_customer_name_length')}-{get_config('validation.max_customer_name_length')} characters",
-        "address": f"Max {get_config('validation.max_address_length')} characters",
-        "square_footage": f"{get_config('validation.min_square_footage')}-{get_config('validation.max_square_footage')} sq ft",
+        "name": "2-50 characters",
+        "address": "Max 100 characters",
+        "square_footage": "100-10000 sq ft",
         "age": "1-120 years",
     }

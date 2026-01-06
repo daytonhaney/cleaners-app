@@ -46,6 +46,7 @@ def e_table_exists(db, table):
         table = False
         # print("f")
     con.commit()
+    con.close()
 
     return table
 
@@ -66,6 +67,7 @@ def c_table_exists(db, table):
         c_table = False
         # print("f")
     con.commit()
+    con.close()
 
     return c_table
 
@@ -98,6 +100,7 @@ def query_exec(q, data=None):
         print(f"Error in query_exec: {e}")
     finally:
         cur.close()
+        con.close()
 
 
 def employee_table(con, emp_table):
@@ -179,10 +182,12 @@ def insert_employee(name, address, region, badge_id):
                 query_exec(q, data)
                 con.commit()
             else:
-                print("record exists")
+                # print("record exists")
+                pass
         except Error as e:
             print(f"Error in insert_employee: {e}")
-        con.close()
+        finally:
+            con.close()
 
     else:
         pass
@@ -239,18 +244,30 @@ def backup_database():
     """backup database - self-contained implementation"""
 
     if os.path.isfile("business_data.db"):
-        import shutil
-        from datetime import datetime
-
-        timestamp = datetime.now().strftime("%Y-%m-%d")
-        backup_name = f"business_data_backup-{timestamp}.db"
-
+        # Try to get user input, default to 'n' if not available
         try:
-            shutil.copy2("business_data.db", backup_name)
-            print(f"Backup successful: {backup_name}")
-            return True
-        except Exception as e:
-            print(f"Backup failed: {e}")
+            backup_choice = input("Backup database? [y/n]: \t ")
+        except (EOFError, KeyboardInterrupt):
+            # Handle cases where input is not available (e.g., in executable)
+            backup_choice = "n"  # Default to not backing up
+            print("Skipping database backup")
+
+        if backup_choice in ["y", "yes", "Y", "YES"]:
+            import shutil
+            from datetime import datetime
+
+            timestamp = datetime.now().strftime("%Y-%m-%d")
+            backup_name = f"business_data_backup-{timestamp}.db"
+
+            try:
+                shutil.copy2("business_data.db", backup_name)
+                print(f"Backup successful: {backup_name}")
+                return True
+            except Exception as e:
+                print(f"Backup failed: {e}")
+                return False
+        else:
+            print("Database backup skipped")
             return False
     else:
         print("No database file found to backup")
