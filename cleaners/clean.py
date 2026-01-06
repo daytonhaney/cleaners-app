@@ -14,6 +14,13 @@ from cleaners.fig import (
     centered_input,
     centered_text,
 )
+from cleaners.validation import (
+    validate_customer_name,
+    validate_address,
+    validate_age,
+    validate_square_footage,
+    validate_package_selection,
+)
 
 # Import Rich UI components
 try:
@@ -87,7 +94,7 @@ def get_employees():
 
 
 def new_customer():
-    """get customers"""
+    """get customers with validation"""
 
     discount = (0, False)
     addr = ""
@@ -98,10 +105,11 @@ def new_customer():
     else:
         name = centered_input("Customer Name <Enter> to exit: ").strip()
 
-    fname = name.replace(" ", "")
+    # Validate customer name
+    is_valid, validated_name = validate_customer_name(name)
 
-    if fname.isalpha():
-        name = name.title()
+    if is_valid:
+        name = validated_name
         valid_name = True
 
         while True:
