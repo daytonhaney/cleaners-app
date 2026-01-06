@@ -13,7 +13,7 @@ A comprehensive application for managing cleaning service transactions, customer
 - Daily transaction summaries and reporting
 - Database backup functionality
 
-## Installation Options
+# Installation Options
 
 ### Option 1: Quick Start (Recommended for End Users)
 
@@ -23,7 +23,7 @@ A comprehensive application for managing cleaning service transactions, customer
 2. Download `CleanersApp.exe` (Windows) or `CleanersApp` (Linux/Mac)
 3. Double-click to run - nothing to install!
 
-### 🔧 Option 2: Manual Setup (For Developers)
+### Option 2: Manual Setup (For Developers)
 
 #### Step 1: Clone Repository
 ```bash
@@ -44,6 +44,9 @@ venv\Scripts\activate
 python3 -m venv venv
 source venv/bin/activate
 ```
+May need to -
+$chmod u+x CleanersApp if on linux to run from terminal
+
 
 #### Step 3: Install Dependencies
 ```bash
@@ -60,7 +63,8 @@ pip install -r requirements.txt
 2. **Linux/Mac**: Run from terminal:
    ```bash
    ./CleanersApp
-   ```
+   ``
+   `
 
 ### For Developers (Source Code)
 ```bash
