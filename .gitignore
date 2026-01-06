@@ -1,19 +1,55 @@
-*.cleaners-app.main.py
-.cleaning.png
-*__pychached__/
+# Python
+__pycache__/
 *.pyc
 *.pyo
+*.pyd
+.Python
 *.so
-*.a
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Database
+business_data.db
+*.db
+*.sqlite
+
+# Build artifacts
+*.spec
+*.exe
+*.app
+*.dmg
+*.deb
+*.rpm
+
+# Development
 *.swp
 *.swo
 *.swn
-bin*
-lib*
-lib64*
-pycfg.
-**/**/*setup
-*qodana.yml
-*business_data.db
+.ruff_cache/
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
 *.editorconfig
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
 .env
+*.env.local
+
+# Test files
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log

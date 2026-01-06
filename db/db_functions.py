@@ -6,8 +6,8 @@ import sqlite3
 import subprocess
 from sqlite3 import Error
 
-#from cleaners.clean import *
-#from cleaners.fig import *
+# from cleaners.clean import *
+# from cleaners.fig import *
 DB = "./business_data.db"
 
 
@@ -46,7 +46,7 @@ def e_table_exists(db, table):
         table = False
         # print("f")
     con.commit()
-    
+
     return table
 
 
@@ -66,7 +66,7 @@ def c_table_exists(db, table):
         c_table = False
         # print("f")
     con.commit()
-    
+
     return c_table
 
 
@@ -116,7 +116,7 @@ def employee_table(con, emp_table):
                 con.close()
             except Error as e:
                 print(f"Error in employee_table: {e}")
-    
+
     return new_e_table, con
 
 
@@ -141,14 +141,14 @@ def insert_cust_totals(names, addresses, discounts, totals):
     set defaults to 0 for amount_paid and discount until payment is made"""
 
     q = """insert into customers (name,address,amount_paid,discount) values (?,?,?,?)"""
-    
+
     # Handle case where single values are passed
     if isinstance(names, str):
         names = [names]
         addresses = [addresses] if addresses else [""]
         discounts = [discounts] if discounts else [0]
         totals = [totals] if totals else [0]
-    
+
     if os.path.isfile(DB):
         # Insert each customer
         for i in range(len(names)):
@@ -194,7 +194,7 @@ def get_customer_name(name):
     q = "select * from customers where name = ?"
     data = (name,)
     cur = query_exec(q, data)
-    
+
     if cur:
         return cur.fetchall()
     return []
@@ -203,36 +203,43 @@ def get_customer_name(name):
 def provision_database():
     """return a db for conditionals"""
 
-    db_create = input(f"Create sqlite3 {DB} [y/n]? \t ")
-    if db_create in ["y", "yes", "Y", "YES"]:
-        if os.path.isfile(DB):
-            print(f"Database already exists in {DB}")
-        if not os.path.isfile(DB):
-            try:
-                db = create_database()
-                cx_new_tbl = customer_table(db, cx_table)
-                emp_new_tbl = employee_table(db, emp_table)
-                print(f"Database and tables created in {DB}")
-                return db
-            except Error as e:
-                print(f"Error in provision_database {e}")
-    else:
+    # Check if database already exists first
+    if os.path.isfile(DB):
+        print(f"Database already exists in {DB}")
+        try:
+            db = sqlite3.connect(DB)
+            return db
+        except Error as e:
+            print(f"Error connecting to existing database: {e}")
 
+    # Try to get user input, default to 'y' if not available
+    try:
+        db_create = input(f"Create sqlite3 {DB} [y/n]? \t ")
+    except (EOFError, KeyboardInterrupt):
+        # Handle cases where input is not available (e.g., in executable)
+        db_create = "y"  # Default to creating database
+        print(f"Auto-creating database {DB}")
+
+    if db_create in ["y", "yes", "Y", "YES"]:
+        try:
+            db = create_database()
+            cx_new_tbl = customer_table(db, cx_table)
+            emp_new_tbl = employee_table(db, emp_table)
+            print(f"Database and tables created in {DB}")
+            return db
+        except Error as e:
+            print(f"Error in provision_database {e}")
+    else:
         print("DB not created")
+        return None
         print("\n")
 
 
 def backup_database():
-    """backup database"""
+    """backup script"""
 
-    if os.path.isfile(DB):
-        backup = input(f"Backup {DB} [y/n]? \t ")
-        if backup in ["y", "yes", "Y", "YES"]:
-            data_backups = os.path.isfile("business_data.db")
-            if data_backups:
-                subprocess.run(["chmod", "u+x", "backup.sh"])
-                subprocess.run(["./backup.sh"])
-                exit()
+    if os.path.isfile("business_data.db"):
+        subprocess.run(["chmod", "u+x", "backup.sh"], check=False)
+        subprocess.run(["./backup.sh"], check=False)
     else:
         print("Run ./backup.sh to create backup")
-        exit()
