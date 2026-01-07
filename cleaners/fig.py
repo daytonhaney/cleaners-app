@@ -29,7 +29,14 @@ def centered_input(prompt):
     twidth = shutil.get_terminal_size().columns
     prompt_destination = (twidth - len(prompt)) // 2
     print(" " * prompt_destination + prompt, end="", flush=True)
-    user_input = input()
+    try:
+        user_input = input()
+    except EOFError:
+        import sys
+        if sys.stdin.isatty():
+            user_input = input()
+        else:
+            user_input = ""
     return user_input
 
 

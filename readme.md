@@ -37,21 +37,20 @@ cd cleaners-app
 ```cmd
 python -m venv venv
 venv\Scripts\activate
+pip install -r requirements.txt
+python main.py
 ```
 
 **macOS/Linux:**
 ```bash
 python3 -m venv venv
 source venv/bin/activate
+pip install -r requirements.txt
+python3 main.py
 ```
 May need to -
 $chmod u+x CleanersApp if on linux to run from terminal
 
-
-#### Step 3: Install Dependencies
-```bash
-pip install -r requirements.txt
-```
 
 ## Usage
 
@@ -87,11 +86,6 @@ The application provides an interactive console interface for:
 - **macOS** (10.14+)
 - **No Python installation required**
 - **No additional dependencies**
-
-### For Source Code Version
-- **Python 3.7+** (3.8+ recommended)
-- **2GB+ RAM**
-- **50MB+ disk space**
 
 ## Database
 
