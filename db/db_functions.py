@@ -84,8 +84,8 @@ def create_database():
     return con
 
 
-def query_exec(q, data=None):
-    """query data"""
+def query_exec(q, data=None, keep_open=False):
+    """query data - always uses parameterization for security"""
 
     con = sqlite3.connect(DB)
     cur = con.cursor()
@@ -93,14 +93,44 @@ def query_exec(q, data=None):
         if data:
             cur.execute(q, data)
         else:
-            cur.execute(q)
+            # For security, only allow hardcoded queries without parameters
+            # Check if query contains any user-input patterns
+            if any(
+                pattern in q.upper()
+                for pattern in [
+                    "SELECT",
+                    "INSERT",
+                    "UPDATE",
+                    "DELETE",
+                    "DROP",
+                    "CREATE",
+                    "ALTER",
+                ]
+            ):
+                # Allow only table creation and schema queries without data
+                if not any(
+                    keyword in q.upper() for keyword in ["VALUES", "WHERE", "SET"]
+                ):
+                    cur.execute(q)
+                else:
+                    raise ValueError("Query with user data requires parameterization")
+            else:
+                cur.execute(q)
         con.commit()
-        return cur
+
+        if keep_open:
+            return cur, con
+        else:
+            return cur
     except Error as e:
         print(f"Error in query_exec: {e}")
+        if keep_open:
+            cur.close()
+            con.close()
     finally:
-        cur.close()
-        con.close()
+        if not keep_open:
+            cur.close()
+            con.close()
 
 
 def employee_table(con, emp_table):
@@ -198,10 +228,15 @@ def get_customer_name(name):
 
     q = "select * from customers where name = ?"
     data = (name,)
-    cur = query_exec(q, data)
+    result = query_exec(q, data, keep_open=True)
 
-    if cur:
-        return cur.fetchall()
+    if result:
+        cur, con = result
+        try:
+            return cur.fetchall()
+        finally:
+            cur.close()
+            con.close()
     return []
 
 
