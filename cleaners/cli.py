@@ -7,7 +7,12 @@ import os
 from pathlib import Path
 
 # Version information
-VERSION = "1.0.0"
+try:
+    from importlib.metadata import version
+
+    VERSION = version("cleaners-app")
+except ImportError:
+    VERSION = "1.0.0"
 LICENSE_TEXT = """
 BSD Zero Clause License
 
@@ -64,8 +69,8 @@ Examples:
 
 Files:
   ./business_data.db          # SQLite database
-  ./main.py                  # Production entry point
-  ./demo.py                  # Demo entry point
+  ./app.py                   # Production entry point
+  ./examples/demo.py         # Demo entry point
 
 For more information, run: %(prog)s --man
         """,
@@ -179,4 +184,4 @@ if __name__ == "__main__":
     # Test CLI functionality
     print("Cleaners App CLI Module")
     print("This module provides command-line argument handling.")
-    print("Use through main.py or demo.py")
+    print("Use through app.py or examples/demo.py")

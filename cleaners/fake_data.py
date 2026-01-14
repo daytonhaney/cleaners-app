@@ -48,8 +48,8 @@ def fake_employee():
     return {
         "name": f"{first_name} {last_name}",
         "address": fake.street_address(),
-        "region": random.choice(REGIONS),
-        "badge_id": fake.bothify(text="??###??").upper(),
+        "phone": fake.phone_number(),
+        "badge_id": fake.bothify("????-###"),
     }
 
 

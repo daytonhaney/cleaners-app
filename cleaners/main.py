@@ -2,8 +2,8 @@
 """Cleaning Service entry point"""
 
 import sys
-from cleaners.cli import process_args
-from cleaners.clean import (
+from .cli import process_args
+from .clean import (
     cust_selection,
     customer_transaction,
     display_customer_info,
@@ -14,12 +14,12 @@ from cleaners.clean import (
     text_colors,
     user_interface,
 )
-from cleaners.fig import io_figlets, io_figlets_title
+from .fig import io_figlets, io_figlets_title
 from db.db_functions import backup_database, insert_cust_totals, provision_database
 
 # Import Rich UI for main title
 try:
-    from cleaners.rich_ui import rich_title, rich_newlines
+    from .rich_ui import rich_title, rich_newlines
 
     RICH_AVAILABLE = True
 except ImportError:
@@ -67,7 +67,7 @@ def main():
 
             # Import Rich loading for progress indicators
             try:
-                from cleaners.rich_ui import rich_loading
+                from .rich_ui import rich_loading
 
                 rich_loading("Processing transaction...")
             except ImportError:
@@ -82,7 +82,7 @@ def main():
 
                 # Use Rich for discount display if available
                 try:
-                    from cleaners.rich_ui import rich_discount_applied, rich_final_total
+                    from .rich_ui import rich_discount_applied, rich_final_total
 
                     rich_discount_applied(dis)
                     dis_ft = final_price(final_total, dis)
@@ -109,4 +109,5 @@ def main():
     backup_database()
 
 
-main()
+if __name__ == "__main__":
+    main()

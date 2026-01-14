@@ -2,6 +2,10 @@
 """Cleaning Service Demo Mode - For testing and fun with fake data"""
 
 import sys
+import os
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from cleaners.cli import process_args
 from cleaners.clean import (
     text_colors,
