@@ -12,7 +12,7 @@ podman run -it --rm cleaners-app
 
 ### Development Setup
 ```bash
-git clone <repository-url>
+git clone https://github.com/daytonhaney/cleaners-app.git
 cd cleaners-app
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
