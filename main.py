@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Cleaning Service entry point"""
 
+import sys
+from cleaners.cli import process_args
 from cleaners.clean import (
     cust_selection,
     customer_transaction,
@@ -26,6 +28,11 @@ except ImportError:
 
 def main():
     """main fn"""
+
+    # Process command-line arguments first
+    result = process_args("main")
+    if result is not None:  # CLI args were processed, exit if needed
+        return
 
     customers = True
     cust_names = None
