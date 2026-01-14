@@ -7,10 +7,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY cleaners/ ./cleaners/
 COPY db/ ./db/
-COPY main.py .
-COPY setup.py .
+COPY app.py .
+COPY pyproject.toml .
 COPY LICENSE .
-RUN pip install .
+RUN pip install -e .
 
 # Production stage
 FROM python:3.11-slim
@@ -41,4 +41,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import sqlite3; sqlite3.connect('/app/data/business_data.db') or exit(1)" || exit(0)
 
 # Interactive mode to preserve Rich UI
-CMD ["python", "main.py"]
+ENTRYPOINT ["python", "-m", "cleaners.main"]
+# Override with non-interactive mode for CI/testing
+CMD []

@@ -99,30 +99,64 @@ def rich_package_selection():
 
 def rich_customer_input(prompt_text):
     """Get customer input using Rich prompt"""
-    return Prompt.ask(prompt_text)
+    try:
+        return Prompt.ask(prompt_text)
+    except (EOFError, KeyboardInterrupt):
+        # Fallback for non-interactive environments
+        import sys
+
+        if not sys.stdin.isatty():
+            return input(prompt_text + " ")
+        raise
 
 
 def rich_int_input(prompt_text):
     """Get integer input using Rich prompt"""
     try:
         return IntPrompt.ask(prompt_text)
+    except (EOFError, KeyboardInterrupt):
+        # Fallback for non-interactive environments
+        import sys
+
+        if not sys.stdin.isatty():
+            try:
+                return int(input(prompt_text + " "))
+            except ValueError:
+                return None
+        raise
     except:
         return None
 
 
 def rich_area_input():
     """Get area measurements with Rich styling"""
-    console.print("[cyan]Measure Length and width of exterior for price[/cyan]")
+    try:
+        console.print("[cyan]Measure Length and width of exterior for price[/cyan]")
 
-    while True:
-        try:
-            length = float(Prompt.ask("Length"))
-            width = float(Prompt.ask("Width"))
-            area = length * width
-            console.print(f"[green]Area: {area:.2f} square feet[/green]")
-            return length, width, area
-        except ValueError:
-            console.print("[red]Please enter valid numbers[/red]")
+        while True:
+            try:
+                length = float(Prompt.ask("Length"))
+                width = float(Prompt.ask("Width"))
+                area = length * width
+                console.print(f"[green]Area: {area:.2f} square feet[/green]")
+                return length, width, area
+            except ValueError:
+                console.print("[red]Please enter valid numbers[/red]")
+    except (EOFError, KeyboardInterrupt):
+        # Fallback for non-interactive environments
+        import sys
+
+        if not sys.stdin.isatty():
+            try:
+                length = float(input("Length: "))
+                width = float(input("Width: "))
+                area = length * width
+                print(f"Area: {area:.2f} square feet")
+                return length, width, area
+            except ValueError:
+                print("Please enter valid numbers")
+                return None, None, None
+        raise
 
 
 def rich_transaction_summary(package_name, package_price, area, labor_cost, total):
