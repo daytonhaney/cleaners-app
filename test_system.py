@@ -61,7 +61,7 @@ def test_cli_help():
 
     # Test demo app help
     result = subprocess.run(
-        [sys.executable, "demo.py", "--help"], capture_output=True, text=True
+        [sys.executable, "examples/demo.py", "--help"], capture_output=True, text=True
     )
     assert result.returncode == 0
     assert "Interactive demo mode" in result.stdout
@@ -326,7 +326,6 @@ def run_comprehensive_tests():
 
     print("🧪 STARTING COMPREHENSIVE TEST SUITE")
     print("=====================================")
-
 
     # Setup test environment
     setup_test_env()

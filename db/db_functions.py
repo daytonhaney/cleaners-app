@@ -93,6 +93,14 @@ def query_exec(q, data=None, keep_open=False):
         if data:
             cur.execute(q, data)
         else:
+            # For security, check for SQL injection attempts
+            # Prevent multiple statements by checking for multiple semicolons
+            if q.strip().count(";") > 1:
+                raise ValueError("Query with user data requires parameterization")
+            # Also check if there's content after a semicolon
+            if ";" in q.strip() and not q.strip().rstrip().endswith(";"):
+                raise ValueError("Query with user data requires parameterization")
+
             # For security, only allow hardcoded queries without parameters
             # Check if query contains any user-input patterns
             if any(
@@ -248,6 +256,14 @@ def provision_database():
         print(f"Database already exists in {DB}")
         try:
             db = sqlite3.connect(DB)
+            # Check if tables exist
+            if not c_table_exists(DB, "customers") or not e_table_exists(
+                DB, "employees"
+            ):
+                print("Tables missing, creating them...")
+                cx_new_tbl = customer_table(db, cx_table)
+                emp_new_tbl = employee_table(db, emp_table)
+                print(f"Tables created in {DB}")
             return db
         except Error as e:
             print(f"Error connecting to existing database: {e}")

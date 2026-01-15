@@ -483,3 +483,13 @@ def display_customer_info(c_names, c_address, c_discounts, c_totals):
         for total_cash in ["Cash Earned", "__________", t]:
             center_cash_earned(total_cash)
         print("\n\n")
+
+    # PDF Export option
+    try:
+        from .pdf_export import export_daily_report_pdf
+
+        export_daily_report_pdf(c_names, c_address, c_discounts, c_totals)
+    except ImportError:
+        pass
+    except Exception as e:
+        print(f"Error during PDF export: {e}")

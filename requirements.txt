@@ -1,6 +1,7 @@
 # Cleaning Service Application Dependencies
 rich>=13.0.0
 faker>=20.0.0
+reportlab>=4.0.0
 
 # Database (sqlite3 is built-in to Python)
 # No additional database dependencies needed

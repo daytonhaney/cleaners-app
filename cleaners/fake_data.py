@@ -50,6 +50,7 @@ def fake_employee():
         "address": fake.street_address(),
         "phone": fake.phone_number(),
         "badge_id": fake.bothify("????-###"),
+        "region": random.choice(REGIONS),
     }
 
 
@@ -115,7 +116,10 @@ def fake_transaction():
 
 def populate_fake_data(num_customers=10, num_employees=5):
     """Populate database with fake data"""
-    from db.db_functions import insert_employee, insert_cust_totals
+    from db.db_functions import insert_employee, insert_cust_totals, provision_database
+
+    # Ensure database is provisioned
+    provision_database()
 
     print(f"Generating {num_employees} fake employees...")
     for i in range(num_employees):

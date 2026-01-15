@@ -59,6 +59,3 @@ Uses SQLite (`business_data.db`) with automatic creation and backup functionalit
 ## License
 
 BSD Zero Clause License - Free for commercial and personal use.
-
-
-![ex](https://github.com/user-attachments/assets/a69f6def-5cc1-4ba4-84c4-80634d7e8ab5)

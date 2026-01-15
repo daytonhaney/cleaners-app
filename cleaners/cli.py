@@ -62,14 +62,15 @@ def handle_main_args():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s                    # Run production application
-  %(prog)s --help             # Show this help message
-  %(prog)s --version          # Show version information
-  %(prog)s --license          # Show license information
+  cleaners-app                    # Run production application
+  cleaners-app --help             # Show this help message
+  cleaners-app --version          # Show version information
+  cleaners-app --license          # Show license information
+  cleaners-app --export-pdf       # Export database to PDF
 
 Files:
   ./business_data.db          # SQLite database
-  ./app.py                   # Production entry point
+  ./main.py                  # Production entry point
   ./examples/demo.py         # Demo entry point
 
 For more information, run: %(prog)s --man
@@ -84,6 +85,11 @@ For more information, run: %(prog)s --man
     )
     parser.add_argument(
         "--man", action="store_true", help="Display manual page and exit"
+    )
+    parser.add_argument(
+        "--export-pdf",
+        action="store_true",
+        help="Export current database data to PDF report",
     )
 
     return parser.parse_args()
@@ -101,8 +107,9 @@ Examples:
   %(prog)s --help                    # Show this help message
   %(prog)s --version                 # Show version information
   %(prog)s --generate-data 25        # Generate 25 fake customers
-  %(prog)s --demo-stats               # Show database statistics
-  %(prog)s --man                     # Display manual page
+%(prog)s --demo-stats               # Show database statistics
+    %(prog)s --export-pdf             # Export current data to PDF
+    %(prog)s --man                     # Display manual page
         """,
     )
 
@@ -128,6 +135,11 @@ Examples:
         action="store_true",
         help="Show database statistics without interactive menu",
     )
+    parser.add_argument(
+        "--export-pdf",
+        action="store_true",
+        help="Export current database data to PDF report",
+    )
 
     return parser.parse_args()
 
@@ -146,6 +158,12 @@ def process_args(mode="main"):
 
         elif args.man:
             print_man_page()
+            sys.exit(0)
+
+        elif args.export_pdf:
+            from .pdf_export import export_database_to_pdf
+
+            export_database_to_pdf()
             sys.exit(0)
 
     elif mode == "demo":
