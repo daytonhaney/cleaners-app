@@ -12,15 +12,26 @@ podman build -t cleaners-app .
 podman run -it --rm cleaners-app
 ```
 
-### Development Setup
+### Linux / macOS  
 ```bash
 git clone https://github.com/daytonhaney/cleaners-app.git
 cd cleaners-app
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python3 -m venv venv 
+source venv/bin/activate
 pip install -r requirements.txt
-python app.py
+python3 main.py
 ```
+
+### Windows (PowerShell)
+```ps1
+git clone https://github.com/daytonhaney/cleaners-app.git
+cd cleaners-app
+python -m venv venv
+venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python .\main.py
+```
+
 
 ## Usage
 
@@ -53,8 +64,6 @@ Uses SQLite (`business_data.db`) with automatic creation and backup functionalit
 
 - Python 3.11+
 - Rich library (included in requirements.txt)
-- 2GB+ RAM
-- 50MB+ disk space
 
 ## License
 

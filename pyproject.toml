@@ -39,7 +39,7 @@ dev = [
 ]
 
 [project.scripts]
-cleaners-app = "cleaners.main:main"
+cleaners-app = "main:main"
 cleaners-demo = "cleaners.cli:main"
 
 [tool.setuptools.packages.find]

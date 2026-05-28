@@ -52,6 +52,6 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Interactive mode to preserve Rich UI
-ENTRYPOINT ["python", "-m", "cleaners.main"]
+ENTRYPOINT ["python", "main.py"]
 # Override with non-interactive mode for CI/testing
 CMD []

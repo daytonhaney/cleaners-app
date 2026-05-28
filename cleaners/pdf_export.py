@@ -52,7 +52,7 @@ def generate_pdf_report(
     )
 
     # Title
-    story.append(Paragraph("Professional Cleaning Service Report", title_style))
+    story.append(Paragraph("In & Out Cleaners - Report", title_style))
     story.append(Spacer(1, 20))
 
     # Report info

@@ -1,6 +1,4 @@
-"""Cleaners package initialization"""
-
-from .main import main
+"""Cleaners package initialization."""
 
 __version__ = "1.0.0"
-__all__ = ["main"]
+__all__ = ["__version__"]

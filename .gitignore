@@ -160,6 +160,11 @@ ai/
 .DS_Store
 Thumbs.db
 
+
+# PDF testing
+*.pdf
+
+
 # Keep important markdown files
 !readme.md
 !CONFIG_GUIDE.md

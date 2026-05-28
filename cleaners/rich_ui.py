@@ -110,6 +110,7 @@ def rich_customer_input(prompt_text):
         raise
 
 
+
 def rich_int_input(prompt_text):
     """Get integer input using Rich prompt"""
     try:
@@ -214,7 +215,7 @@ def rich_final_total(final_amount):
     console.print()
 
 
-def rich_customer_daily_summary(customers_data):
+def rich_customer_daily_summary(customers_data: object) -> None:
     """Display daily customer summary in a Rich table"""
     if not customers_data:
         console.print("[yellow]No customers processed today[/yellow]")

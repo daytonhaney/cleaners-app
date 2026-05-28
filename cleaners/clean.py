@@ -6,6 +6,7 @@ import re
 import shutil
 from datetime import datetime
 from time import sleep
+from typing import Any, Literal
 
 from cleaners.fig import (
     _txt_,
@@ -15,33 +16,33 @@ from cleaners.fig import (
     centered_text,
 )
 from cleaners.validation import (
-    validate_customer_name,
     validate_address,
     validate_age,
-    validate_square_footage,
+    validate_customer_name,
     validate_package_selection,
+    validate_square_footage,
 )
 
 # Import Rich UI components
 try:
     from .rich_ui import (
-        rich_title,
-        rich_employee_info,
-        rich_package_selection,
-        rich_customer_input,
-        rich_int_input,
         rich_area_input,
-        rich_transaction_summary,
-        rich_discount_applied,
-        rich_final_total,
         rich_customer_daily_summary,
-        rich_loading,
+        rich_customer_input,
+        rich_discount_applied,
+        rich_employee_info,
         rich_error,
-        rich_success,
+        rich_final_total,
         rich_info,
-        rich_warning,
-        rich_separator,
+        rich_int_input,
+        rich_loading,
         rich_newlines,
+        rich_package_selection,
+        rich_separator,
+        rich_success,
+        rich_title,
+        rich_transaction_summary,
+        rich_warning,
     )
 
     RICH_AVAILABLE = True
@@ -57,7 +58,7 @@ total_services = {
 }
 
 
-def get_employees():
+def get_employees() -> list[Any]:
     """get employees"""
 
     employee_list = []
@@ -232,9 +233,9 @@ def cust_selection():
     red = text_colors("red")
     prompt = """
     [1] Regular Package
-    [2] Premium Package  
+    [2] Premium Package
     [3] Outdoor Package
-    
+
     Select package [1-3]: """
     while True:
         try:
@@ -257,7 +258,7 @@ def cust_selection():
                 print(red("\nError: Invalid input. Please enter a number.\n"))
 
 
-def customer_transaction(selection, discount):
+def customer_transaction(selection: object, discount: object) -> list[Any]:
     """sum of area and labor charge added to price from LIST_PRICE"""
 
     LIST_PRICE = [100.00, 200.00, 300.00]
@@ -369,7 +370,7 @@ def customer_transaction(selection, discount):
     return totals
 
 
-def price_per_house(selection, labor):
+def price_per_house(selection: object, labor: object) -> Any | None:
     """sets vars to use in customer_transaction"""
 
     LIST_PRICE = [100.00, 200.00, 300.00]
