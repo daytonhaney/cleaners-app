@@ -1,0 +1,11 @@
+# Cleaning Service Application Dependencies
+rich>=13.0.0
+faker>=20.0.0
+reportlab>=4.0.0
+
+# Database (sqlite3 is built-in to Python)
+# No additional database dependencies needed
+
+# Optional dependencies for enhanced functionality:
+# colorama>=0.4.6  # For Windows color support (included with rich)
+# click>=8.0.0     # For enhanced CLI interactions

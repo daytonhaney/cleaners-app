@@ -13,12 +13,13 @@ echo -e "${GREEN}Cleaners App Installation Script${NC}"
 echo "=================================="
 
 # Check if we're in the right directory
-if [ ! -f "main.py" ] || [ ! -f "demo.py" ]; then
-    echo -e "${RED}Error: Please run this script from the cleaners-app directory${NC}"
-    exit 1
-fi
-
+#if [ ! -f "main.py" ] || [ ! -f "demo.py" ]; then
+#    echo -e "${RED}Error: Please run this script from the cleaners-app directory${NC}"
+#    exit 1
+#fi
+#
 # Check if executables exist
+
 if [ ! -d "dist" ] || [ ! -f "dist/cleaners-app" ] || [ ! -f "dist/cleaners-demo" ]; then
     echo -e "${YELLOW}Building executables...${NC}"
     
@@ -31,8 +32,8 @@ if [ ! -d "dist" ] || [ ! -f "dist/cleaners-app" ] || [ ! -f "dist/cleaners-demo
     # Activate and build
     source venv/bin/activate
     pip install -r requirements.txt faker
-    pyinstaller --onefile --name cleaners-app main.py
-    pyinstaller --onefile --name cleaners-demo demo.py
+    pyinstaller --onefile --paths . --name cleaners-app main.py
+    pyinstaller --onefile --paths . --name cleaners-demo examples/demo.py
     deactivate
     
     echo -e "${GREEN}Build completed!${NC}"
